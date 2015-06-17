@@ -1,0 +1,136 @@
+<?php
+	
+class CP_Themes {
+	
+	protected $current_theme_dir;
+	protected $current_theme;
+	
+	public function __construct() {
+		
+		global $root;
+		
+		$ct = $root->settings->get('cp_current_theme');
+		
+		$this->current_theme = $ct;
+		$this->current_theme_dir = CP_WORKING_DIR . '/themes/' . $ct;
+		
+		include($this->current_theme_dir . '/functions.php');
+		
+	}
+	
+	public function get_theme_dir() {
+		return $this->current_theme_dir;
+	}
+	
+	public function get_theme_part($slug, $output = true) {
+		global $root;
+		$theme_part = $this->current_theme_dir . '/' . $slug . '.php';
+		if ($output) {
+			include($theme_part);
+		} else {
+			$output = file_get_contents($theme_part);
+		}
+		CP_Action::perform($slug . '_loaded');
+		if ($output) return $output;
+	}
+	
+	public function cp_head() {
+		root()->hooks->action->perform('cp_head');
+	}
+	
+	public function cp_footer() {
+		root()->hooks->action->perform('cp_footer');
+	}
+	
+	public function get_theme_url() {
+		return 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . '/themes/' . $this->current_theme;
+	}
+	
+	public function get_theme_details($slug = false) {
+		if (!$slug) $slug = $this->current_theme;
+		$theme_def = CP_WORKING_DIR . '/themes/' . $slug . '/theme.json';
+		if (file_exists($theme_def)) {
+			$json = file_get_contents($theme_def);
+			$details = json_decode($json);
+			return $details;
+		} else {
+			return false;
+		}
+	}
+	
+}
+
+class CP_Components {
+		
+	public function admin_menu() {
+		$objects = root()->hooks->stack['object'];
+		$class = root()->hooks->filter->apply('admin_menu_class', 'nav nav-pills nav-stacked');
+		echo '<ul class="'.$class.'">';
+		foreach ($objects as $object=>$a) {
+			if (class_exists($object)) {
+				$item = new $object;
+			} else {
+				$item = new CP_Object($object);
+			}
+			
+			echo $item->menu();
+		}
+		echo '</ul>';
+	}
+	
+	public function admin_content() {
+		$item = root()->objects->get_object();
+		echo root()->hooks->filter->apply('admin_content', $item->admin());
+	}
+	
+	public function object_content() {
+		$item = root()->objects->get_object();
+		echo root()->hooks->filter->apply('object_content', $item->front_end());
+	}
+	
+	public function table($data, $keys = false, $owner = false) {
+		echo '<table class="table">';
+		$thead = '';
+		$row_output = '';
+		$key_data = $keys;
+		if (count($data) > 0) {
+			if ($keys) {
+				$keys = array_keys($keys);
+			} else {
+				if (is_object($data[0])) {
+					$keys = $data[0]->columns;
+				} else {
+					$keys = array_keys($data[0]);
+				}
+			}
+			foreach ($data as $row) {
+				$row = root()->hooks->filter->apply('cp_component_table_row_data', $row);
+				$row_output .= '<tr>';
+				foreach ($keys as $col) {
+					$func = isset($key_data[$col]['callback']) ? $key_data[$col]['callback'] : false;
+					$callback = isset($key_data[$col]['value']) ? $key_data[$col]['value'] : ($owner && $func ? $owner->$func($row) : '');
+					if (is_object($data[0])) {
+						$row_output .= '<td>' . root()->hooks->filter->apply('cp_component_table_cell', $callback ?: $row->{$col}) . '</td>';
+					} else {
+						$row_output .= '<td>' . root()->hooks->filter->apply('cp_component_table_cell', $callback ?: $row[$col]) . '</td>';
+					}
+				}
+				$row_output .= '</tr>';
+			}
+			$thead .= '<tr>';
+			foreach ($keys as $key) {
+				$sortcol = $key_data && isset($key_data[$key]['no_sort']) && $key_data[$key]['no_sort'];
+				$thead .= '<th>';
+				$thead .= (!$sortcol ? '<a href="#" class="table-sort" data-col="'.$key.'">' : '') . ($key_data ? ($key_data[$key]['display']?:$key) : $key) . (!$sortcol ? '</a>' : '');
+				$thead .= '</th>';
+			}
+			$thead .= '</tr>';
+			echo $thead;
+			echo $row_output;
+		} else {
+			echo '<tr colspan="'.count($keys).'"><td>No Data to Display</td></tr>';
+		}
+		echo '</table>';
+	}
+	
+}

@@ -1,0 +1,6 @@
+{
+	"name":"Google Analytics Module",
+	"description":"Enables google analytics",
+	"slug":"ga",
+	"main_file":"plugin.php"
+}

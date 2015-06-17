@@ -1,0 +1,6 @@
+{
+	"name":"Hosting",
+	"description":"Provides user ability to modify hosted apps",
+	"main_file":"plugin.php",
+	"slug":"hosting"
+}

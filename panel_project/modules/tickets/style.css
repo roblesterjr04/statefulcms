@@ -1,0 +1,17 @@
+.comment img {
+	max-width: 100%;
+	margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+	.comments {
+		max-height: 400px;
+		overflow-y: scroll;
+	}
+}
+
+@media (max-width: 767px) {
+	.comment .col-xs-2 {
+		padding-right: 0;
+	}
+}

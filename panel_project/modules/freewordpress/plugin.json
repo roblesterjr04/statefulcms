@@ -1,0 +1,6 @@
+{
+	"name":"Wordpress",
+	"description":"Hosted Wordpress",
+	"main_file":"plugin.php",
+	"slug":"wordpress"
+}

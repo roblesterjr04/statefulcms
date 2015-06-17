@@ -1,0 +1,6 @@
+{
+	"name":"Styles",
+	"description":"Includes custom stylesheets",
+	"main_file":"plugin.php",
+	"slug":"styles"
+}

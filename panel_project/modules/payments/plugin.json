@@ -1,0 +1,6 @@
+{
+	"name":"Payment Module",
+	"description":"Provides user ability to save payment information",
+	"main_file":"plugin.php",
+	"slug":"payments"
+}

@@ -1,0 +1,6 @@
+{
+	"name":"User Meta",
+	"description":"Provides new user meta fields",
+	"slug":"usermeta",
+	"main_file":"plugin.php"
+}
