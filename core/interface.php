@@ -6,6 +6,10 @@ class CP_Interface {
 		
 	}
 	
+	public function notice($message, $type, $name, $time, $owner, $sender, $echo = true) {
+		
+	}
+	
 	public function confirm($message, $name, $owner, $sender, $echo = true) {
 		$name = "confirm_$name";
 		$event = 'response';

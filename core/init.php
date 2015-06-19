@@ -13,8 +13,10 @@ require_once 'themes.php';
 require_once 'objects.php';
 require_once 'authenticate.php';
 require_once 'interface.php';
-require_once 'fields.php';
+require_once 'controls.php';
+
 
 $root = new CP_Foundation();
 
+// Initialize the foundation. Lets get building...
 $root->init();

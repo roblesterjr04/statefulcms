@@ -15,17 +15,6 @@ class CP_Hooks {
 		$this->notice = new CP_Notice();
 	}
 	
-	public function init() {
-		/*global $cp_hooks;
-		$cp_hooks = [
-			'action' => [],
-			'filter' => [],
-			'notice' => [],
-			'object' => []
-		];*/
-		
-	}
-	
 	public function add_hook($hook, $type, $callback, $priority, $params, $meta = 0) {
 		global $cp_hooks;
 		$hook_properties = [

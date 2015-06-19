@@ -120,8 +120,29 @@ class CP_Users extends CP_Object {
 	
 	public function object_list($limit = null, $offset = null) {
 		$items = $this->get_objects($limit, $offset);
-		$keys = ['email'=>['display'=>'Email', 'no_sort'=>true], 'user_name'=>['display'=>'User Name']];
-		echo root()->components->table($items, $keys);
+		$columns = [
+			'email'=>[
+				'display'=>'Email', 
+				'no_sort'=>true,
+				'callback'=>'user_cell_link'
+			], 
+			'user_name'=>[
+				'display'=>'User Name'
+			]
+		];
+		echo root()->components->table($items, $columns, $this);
+	}
+	
+	public function user_cell_link($row) {
+		return '<a href="'.$this->edit_link($row->id).'">'.$row->email.'</a>';
+	}
+	
+	public function admin() {
+		if (empty($_GET['id'])) {
+			parent::admin();
+		} else {
+			
+		}
 	}
 	
 }

@@ -5,6 +5,8 @@ class CP_Core {
 		
 	}
 }
+
+// Our foundation object, everything is an object of this.
 	
 class CP_Foundation {
 	
@@ -32,7 +34,6 @@ class CP_Foundation {
 		$this->components = new CP_Components();
 		$this->authentication = new CP_Login();
 		$this->iface = new CP_Interface();
-		$this->iface->fields = new CP_Fields();
 		
 		$this->objects->add('CP_Page');
 		$this->objects->add('Theme_Manager');
@@ -51,6 +52,8 @@ class CP_Foundation {
 	}
 	
 }
+
+// Function to return the foundation from anywhere.
 
 function root() {
 	global $root;

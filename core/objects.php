@@ -24,7 +24,7 @@ class CP_Object {
 		$this->admin();
 	}
 	
-	protected function save($data = []) {
+	public function save($data = []) {
 		$type = $this->_slug;
 		$id = $data['id'];
 		$name = $data['name'];
@@ -33,8 +33,9 @@ class CP_Object {
 		return root()->db->update('object_items', $object_data);
 	}
 	
-	protected function delete($id) {
-		root()->db->delete('object_items', $id);
+	public function remove($id) {
+		$table = root()->db->prefix . 'object_items';
+		root()->db->mySql->query("delete from $table where id = $id");
 	}
 	
 	public function menu_parts() {
@@ -59,6 +60,10 @@ class CP_Object {
 	}
 	
 	public function init_async() {
+		
+	}
+	
+	public function finished_loading() {
 		
 	}
 	
@@ -95,8 +100,8 @@ class CP_Object {
 		return $control;
 	}
 	
-	public function edit_link($module = false, $id = null) {
-		return root()->settings->get('cp_site_url').'/admin/?mod='.($module?:$this->_slug).($id?'&id='.$id:'');
+	public function edit_link($id = null) {
+		return root()->settings->get('cp_site_url').'/admin/?mod='.$this->_slug.($id?'&id='.$id:'');
 	}
 	
 	public function get_objects($limit = null, $offset = null) {
@@ -118,6 +123,11 @@ class CP_Object {
 			}
 		}
 		return $objects;
+	}
+	
+	public function object_list($limit = null, $offset = null) {
+		$items = $this->get_objects($limit, $offset);
+		echo root()->components->table($items);
 	}
 	
 }
@@ -145,11 +155,6 @@ class CP_Objects {
 			root()->hooks->action->perform('get_object', $object);
 			return $object;
 		}
-	}
-	
-	public function object_list($limit = null, $offset = null) {
-		$items = $this->get_objects($limit, $offset);
-		echo root()->components->table($items);
 	}
 	
 	public function add($object) {
@@ -182,25 +187,32 @@ class CP_Objects {
 	
 }
 
+#############################
+###### The Page Object ######
+#############################
+
 class CP_Page extends CP_Object {
 	
 	public function __construct() {
 		parent::__construct('CP_Page');
 	}
 	
-	public function init() {
-		root()->hooks->action->add('cp_ajax_save_page', function($data) {
-			$page = $data['object'];
-			$page->save($data['id']);
-		}, 10, 1);
-		parent::init();
-	}
-		
 	public function title() {
 		return 'Pages';
 	}
 	
-	public function page_save_click() {
+	public function finished_loading() {
+		$this->controls->page_save->disable();
+	}
+	
+	/**
+	 * Function for the click event tied to the save button.
+	 * 
+	 * @access public
+	 * @param mixed $sender
+	 * @return void
+	 */
+	public function page_save_click($sender) {
 		$controls = $this->controls;
 		$id = $this->state->page_save_id;
 		root()->iface->console("Attempting to save page at ID ($id)");
@@ -213,27 +225,41 @@ class CP_Page extends CP_Object {
 			]
 		];
 		$result = $this->save($data);
+		$sender->disable();
 		if ($result) root()->iface->console('(' . $data['name'] . ') saved successfully.');
 	}
 	
-	public function confirm_delete_page_response($sender, $data) {
-		$id = $this->state->delete_page;
-		if ($data == 'OK') {
-			root()->iface->console("Deleted Page ID: $id");
-		}
-	}
-	
+	/**
+	 * Function for the change event on the page_content field of the interface.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function page_content_change() {
-		$value = $this->controls->page_content->val();
-		root()->iface->console('Autosave: ' . $value);
+		$this->controls->page_save->enable();
 	}
 	
+	/**
+	 * Function for the change event on the page_title field of the interface.
+	 * 
+	 * @access public
+	 * @param mixed $sender
+	 * @param mixed $data
+	 * @return void
+	 */
 	public function page_title_change($sender, $data) {
 		$value = $this->controls->page_title->val();
 		$this->controls->header_label->val($value);
-		//root()->iface->console($value);
+		$this->controls->page_save->enable();
 	}
 	
+	/**
+	 * admin function. Echo the admin interface to the screen.
+	 * 
+	 * @access public
+	 * @param bool $id (default: false)
+	 * @return void
+	 */
 	public function admin($id = false) {
 		if (empty($_GET['id']) && !$id) {
 			parent::admin();
@@ -261,9 +287,18 @@ class CP_Page extends CP_Object {
 		}
 	}
 	
+	/**
+	 * Overrides the parent object_list function. Provides data for which fields to show, and content for custom fields.
+	 * 
+	 * @access public
+	 * @param mixed $limit (default: null)
+	 * @param mixed $offset (default: null)
+	 * @return void
+	 */
 	public function object_list($limit = null, $offset = null) {
 		$items = $this->get_objects($limit, $offset);
-		$keys = [
+		$columns = [
+			'id'=>[],
 			'name'=>[
 				'display'=>'Name', 
 				'callback'=>'name_cell_link'
@@ -275,11 +310,11 @@ class CP_Page extends CP_Object {
 				'callback'=>'control_cell'
 			]
 		];
-		echo root()->components->table($items, $keys, $this);
+		echo root()->components->table($items, $columns, $this);
 	}
 	
 	public function name_cell_link($row) {
-		return '<a href="'.$this->edit_link('CP_Page',$row->id).'">'.$row->name.'</a>';
+		return '<a href="'.$this->edit_link($row->id).'">'.$row->name.'</a>';
 	}
 	
 	public function control_cell($row) {
@@ -296,6 +331,22 @@ class CP_Page extends CP_Object {
 		root()->iface->confirm('Are you sure you want to delete page ' . $name, 'delete_page', $this, $sender);
 	}
 	
+	/**
+	 * Function called when the confirmation box is clicked, $data will either be 'OK' or 'Cancel'.
+	 * 
+	 * @access public
+	 * @param mixed $sender
+	 * @param mixed $data
+	 * @return void
+	 */
+	public function confirm_delete_page_response($sender, $data) {
+		$id = $this->state->delete_page;
+		if ($data == 'OK') {
+			$this->remove($id);
+			root()->iface->console("Deleted Page ID: $id");
+		}
+	}
+	
 }
 
 class Theme_Manager extends CP_Object {
@@ -308,7 +359,7 @@ class Theme_Manager extends CP_Object {
 		return 'Theme Manager';
 	}
 	
-	public function object_items($limit = null, $offset = null) {
+	public function theme_items($limit = null, $offset = null) {
 		$themes = [];
 		$dir = CP_WORKING_DIR . '/themes';
 		$theme_dirs = scandir($dir);
@@ -325,7 +376,7 @@ class Theme_Manager extends CP_Object {
 	}
 	
 	public function object_list($limit = null, $offset = null) {
-		$items = $this->object_items();
+		$items = $this->theme_items();
 		echo root()->components->table($items);
 	}
 	

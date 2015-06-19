@@ -3,7 +3,7 @@
 	
 class DB {
 	
-	protected $mySql;
+	public $mySql;
 	protected $result;
 	public $prefix;
 	
@@ -100,19 +100,8 @@ class DB {
 		return $this->mySql->query($statement);
 	}
 	
-	public function delete($table, $id) {
-		if (is_array($id)) {
-			foreach ($id as $i) {
-				$this->_delete($table, $i);
-			}
-		} else {
-			$this->_delete($table, $id);
-		}
-	}
-	
-	private function _delete($table, $id) {
-		$table = $this->prefix . $table;
-		$statement = "delete from $table where id = $id";
+	public function delete($table, $where) {
+		
 	}
 	
 }

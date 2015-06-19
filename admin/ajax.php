@@ -1,5 +1,9 @@
 <?php
 	
+############################################
+###### Lets handle our stateful AJAX #######
+############################################
+	
 header('Content-type: text/javascript;');
 
 require_once '../cp-config.php';
@@ -41,5 +45,3 @@ else {
 	}
 
 }
-
-//echo '$("#callback_'.$_REQUEST['callback'].'").remove();';

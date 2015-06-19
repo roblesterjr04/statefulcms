@@ -81,6 +81,9 @@ class CP_Components {
 	public function admin_content() {
 		$item = root()->objects->get_object();
 		echo root()->hooks->filter->apply('admin_content', $item->admin());
+		echo '<script>';
+		$item->finished_loading();
+		echo '</script>';
 	}
 	
 	public function object_content() {
@@ -104,21 +107,26 @@ class CP_Components {
 				}
 			}
 			foreach ($data as $row) {
+				if (is_array($row)) {
+					$row = json_decode(json_encode($row), false);
+				}
 				$row = root()->hooks->filter->apply('cp_component_table_row_data', $row);
-				$row_output .= '<tr>';
+				$firstcol = in_array('id', $keys) ? 'id' : $keys[0];
+				$firstval = $row->$firstcol;
+				$row_output .= "<tr row-key=\"$firstcol\" row-key-val=\"$firstval\">";
 				foreach ($keys as $col) {
 					$func = isset($key_data[$col]['callback']) ? $key_data[$col]['callback'] : false;
-					$callback = isset($key_data[$col]['value']) ? $key_data[$col]['value'] : ($owner && $func ? $owner->$func($row) : '');
-					if (is_object($data[0])) {
-						$row_output .= '<td>' . root()->hooks->filter->apply('cp_component_table_cell', $callback ?: $row->{$col}) . '</td>';
-					} else {
-						$row_output .= '<td>' . root()->hooks->filter->apply('cp_component_table_cell', $callback ?: $row[$col]) . '</td>';
-					}
+					$callback = $owner && $func ? $owner->$func($row) : '';
+					$value = isset($key_data[$col]['value']) ? $key_data[$col]['value'] : $callback;
+					if (is_array($key_data[$col]) && !isset($key_data[$col]['display'])) continue;
+					// Output of column
+					$row_output .= '<td>' . root()->hooks->filter->apply('cp_component_table_cell', $value ?: $row->{$col}) . '</td>';
 				}
 				$row_output .= '</tr>';
 			}
 			$thead .= '<tr>';
 			foreach ($keys as $key) {
+				if (is_array($key_data[$key]) && !isset($key_data[$key]['display'])) continue;
 				$sortcol = $key_data && isset($key_data[$key]['no_sort']) && $key_data[$key]['no_sort'];
 				$thead .= '<th>';
 				$thead .= (!$sortcol ? '<a href="#" class="table-sort" data-col="'.$key.'">' : '') . ($key_data ? ($key_data[$key]['display']?:$key) : $key) . (!$sortcol ? '</a>' : '');

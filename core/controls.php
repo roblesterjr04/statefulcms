@@ -15,7 +15,7 @@ class CP_Fields {
 	
 }
 	
-class CP_Field {
+class CP_Control {
 	
 	public $options;
 	public $name;
@@ -124,20 +124,21 @@ class CP_Field {
 	
 }
 
-class CP_TextField extends CP_Field {
+class CP_TextField extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
 		$options['type'] = 'text';
 		$this->name = $name;
 		$owner->add_control($this);
 		$this->owner = $owner;
+		$this->options = $options;
 		$options['onchange'] = parent::event_handler('_change');
 		parent::__construct($name, $options);
 		root()->hooks->action->perform('new_cp_textfield', $this);
 	}
 }
 
-class CP_Button extends CP_Field {
+class CP_Button extends CP_Control {
 	
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
@@ -153,7 +154,7 @@ class CP_Button extends CP_Field {
 	
 }
 
-class CP_Editor extends CP_Field {
+class CP_Editor extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
 		$this->name = $name;
@@ -168,12 +169,13 @@ class CP_Editor extends CP_Field {
 		$value = $this->options['value'];
 		unset($this->options['value']);
 		$atts = $this->atts($this->options);
-		$output = "<textarea name=\"{$this->name}\" $atts>$value</textarea>";
+		$output = "<textarea id=\"{$this->name}\" name=\"{$this->name}\" $atts>$value</textarea>";
+		$output .= "<script>CKEDITOR.replace('{$this->name}');</script>";
 		return $output;
 	}
 }
 
-class CP_TextArea extends CP_Field {
+class CP_TextArea extends CP_Control {
 	
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
@@ -195,7 +197,7 @@ class CP_TextArea extends CP_Field {
 	
 }
 
-class CP_Hidden extends CP_Field {
+class CP_Hidden extends CP_Control {
 	public function __construct($name, $value, $options = [], $owner) {
 		$options['value'] = $value;
 		$options['type'] = 'hidden';
@@ -205,7 +207,7 @@ class CP_Hidden extends CP_Field {
 	}
 }
 
-class CP_Label extends CP_Field {
+class CP_Label extends CP_Control {
 	public function __construct($name, $value, $options = [], $owner) {
 		$options['value'] = $value;
 		$options['name'] = $name;
@@ -225,7 +227,7 @@ class CP_Label extends CP_Field {
 	}
 }
 
-class CP_Timer extends CP_Field {
+class CP_Timer extends CP_Control {
 
 	public function __construct($name, $interval, $owner) {
 		$this->name = $name;
