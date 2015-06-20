@@ -86,22 +86,34 @@ class DB {
 		else return $insertid;
 	}
 	
-	public function update($table, $data) {
+	public function update($table, $data, $where = false) {
 		$table = $this->prefix . $table;
 		$values = [];
-		if (!isset($data['id'])) return false;
-		$id = $data['id'];
 		unset($data['id']);
+		$where = $where ? 'where ' . $this->_parse_where($where) : '';
 		foreach ($data as $column=>$value) {
 			$values[] = "$column = '$value'";
 		}
 		$data_string = implode(',', $values);
-		$statement = "update $table set $data_string where id = $id";
+		$statement = "update $table set $data_string $where";
 		return $this->mySql->query($statement);
 	}
 	
-	public function delete($table, $where) {
-		
+	public function delete($table, $where = false) {
+		if (!$where) return false;
+		$table = $this->prefix . $table;
+		$where = $where ? 'where ' . $this->_parse_where($where) : '';
+		$statement = "delete from $table $where";
+		return $this->mySql->query($statement);
+	}
+	
+	private function _parse_where($where) {
+		if (is_string($where)) return $where;
+		$output = [];
+		foreach ($where as $key=>$value) {
+			$output[] = "$key = '$value'";
+		}
+		return implode(' AND ', $output);
 	}
 	
 }

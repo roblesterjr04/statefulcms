@@ -1,6 +1,8 @@
 <?php
 	
 function cp_def_head() {
+	root()->components->jquery();
+	root()->components->state_script();
 	echo '<link rel="stylesheet" href="'.root()->themes->get_theme_url().'/bootstrap/css/bootstrap.min.css" type="text/css" />';
 	echo '<link rel="stylesheet" href="'.root()->themes->get_theme_url().'/bootstrap/css/bootstrap-theme.min.css" type="text/css" />';
 	echo '<style type="text/css">.login .notice { margin-top: 35% } </style>';

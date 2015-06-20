@@ -14,10 +14,8 @@ root()->authentication->secure();
 		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>
 		<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="//cdn.ckeditor.com/4.4.7/standard/ckeditor.js"></script>
-		<script type="text/javascript" src="js/admin.js"></script>
-		<script type="text/javascript">
-			var ajax_host = "<?= root()->settings->get('cp_site_url') ?>/admin/ajax.php";
-		</script>
+		<script type="text/javascript" src="/js/state.js"></script>
+		<script type="text/javascript">var ajax_host = "<? root()->settings->get('cp_site_url') ?>/admin/ajax.php";</script>
 	</head>
 	<body style="padding-top: 70px;">
 		<!-- Top Nav Toolbar -->

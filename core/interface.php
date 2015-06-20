@@ -10,6 +10,16 @@ class CP_Interface {
 		
 	}
 	
+	public function script($script, $echo = true) {
+		
+	}
+	
+	public function refresh($echo = true) {
+		$script = root()->hooks->filter->apply('iface_refresh', 'window.location.reload();');
+		if ($echo) echo $script;
+		return $script;
+	}
+	
 	public function confirm($message, $name, $owner, $sender, $echo = true) {
 		$name = "confirm_$name";
 		$event = 'response';

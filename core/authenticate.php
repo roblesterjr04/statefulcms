@@ -130,7 +130,9 @@ class CP_Users extends CP_Object {
 				'display'=>'User Name'
 			]
 		];
-		echo root()->components->table($items, $columns, $this);
+		//echo root()->components->table($items, $columns, $this);
+		$table = new CP_Table('user_list', $items, $columns, ['class'=>'table'], $this);
+		$table->display();
 	}
 	
 	public function user_cell_link($row) {

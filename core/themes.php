@@ -35,6 +35,7 @@ class CP_Themes {
 	}
 	
 	public function cp_head() {
+		root()->components->head();
 		root()->hooks->action->perform('cp_head');
 	}
 	
@@ -78,6 +79,19 @@ class CP_Components {
 		echo '</ul>';
 	}
 	
+	public function head() {
+		
+	}
+	
+	public function state_script() {
+		echo '<script type="text/javascript">var ajax_host = "'.root()->settings->get('cp_site_url').'/admin/ajax.php";</script>';
+		echo '<script type="text/javascript" src="/js/state.js"></script>';
+	}
+	
+	public function jquery() {
+		echo '<script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>';
+	}
+	
 	public function admin_content() {
 		$item = root()->objects->get_object();
 		echo root()->hooks->filter->apply('admin_content', $item->admin());
@@ -88,6 +102,7 @@ class CP_Components {
 	
 	public function object_content() {
 		$item = root()->objects->get_object();
+		if (!$item->is_public) return;
 		echo root()->hooks->filter->apply('object_content', $item->front_end());
 	}
 	

@@ -14,6 +14,8 @@ require_once '../core/init.php';
 $object = $_REQUEST['object'];
 $data = isset($_REQUEST['data']) ? $_REQUEST['data'] : false;
 
+$callback = $_REQUEST['callback'];
+
 echo "sessionState = '$object';\n";
 
 echo "if (console) console.log('*');\n";
@@ -24,10 +26,14 @@ $func = $_REQUEST['callback'] . '_' . $_REQUEST['event'];
 
 // We can't change yet, we need to update the state with our changed value, and once the new state is saved. We can call the change callback.
 if ($_REQUEST['event'] == '_change') {
-	echo "var newval = $('*[name=\"".$_REQUEST['callback']."\"]').val();\n";
+	if (get_class($sender) == 'CP_Editor') {
+		echo "var newval = CKEDITOR.instances.$callback.getData();";
+	} else {
+		echo "var newval = $('*[name=\"$callback\"]').val();\n";
+	}
 	$sender = $_REQUEST['sender'];
 	//echo "console.log('Executing state update: '+newval);\n";
-	echo "cp_ajax('".$_REQUEST['callback']."', sessionState, '$sender', 'update_state', newval, true);\n\n";
+	echo "cp_ajax('$callback', sessionState, '$sender', 'update_state', newval, true);\n\n";
 }
 
 // We are being asked to update the state. 

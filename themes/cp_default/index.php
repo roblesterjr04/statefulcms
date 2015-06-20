@@ -11,9 +11,9 @@
 					</ul>
 				</div>
 				<div class="col-md-10 col-sm-9">
-					<? //if (CP_Object::get_object()) : ?>
-						<? //CP_Components::object_content(); ?>
-					<? //endif; ?>
+					<? if (root()->objects->get_object()) : ?>
+						<? root()->components->object_content(); ?>
+					<? endif; ?>
 				</div>
 			</div>
 		</div>

@@ -20,6 +20,7 @@ class CP_Control {
 	public $options;
 	public $name;
 	public $owner;
+	public $events = [];
 	
 	protected function atts($options) {
 		$atts = [];
@@ -30,20 +31,40 @@ class CP_Control {
 		return $atts;
 	}
 	
-	public function __construct($name, $options) {
+	public function __construct($name, $options, $owner) {
 		$this->options = $options;
 		$this->name = $name;
+		$this->owner = $owner;
+		$this->owner->add_control($this);
 	}
 	
 	public function display() {
 		echo $this->control();
 	}
 	
-	public function control() {
+	public function markup() {
+		if (!isset($this->options['id'])) $this->options['id'] = $this->name;
 		$atts = $this->atts($this->options);
+		$output = "<input name=\"{$this->name}\" $atts/>";
+		return root()->hooks->filter->apply('cp_fields_control', $output);
+	}
+	
+	public function control() {
 		$sessionstate = $this->set_session_state();
-		$output = "<input name=\"{$this->name}\" $atts/>$sessionstate";
-		return CP_Filter::apply('cp_fields_control', $output);
+		$markup = $this->markup();
+		$markup .= $sessionstate;
+		$markup .= $this->bind_events();
+		return $markup;
+	}
+	
+	private function bind_events() {
+		$output = '';
+		foreach ($this->events as $event) {
+			$handler = $this->event_handler($event == 'change' ? '_change' : $event);
+			$id = $this->options['id'];
+			$output .= "<script>$('#$id').on('$event', function() { $handler });</script>";
+		}
+		return $output;
 	}
 	
 	public function val($text, $echo = true) {
@@ -122,19 +143,24 @@ class CP_Control {
 		return base64_encode(serialize($object));
 	}
 	
+	protected function bind($event) {
+		$this->events[] = $event;
+	}
+	
+	public function fade_out($echo = true) {
+		$script = root()->hooks->filter->apply('field_fade_out', '$(\'*[name="'.$this->name.'"]\').fadeOut("fast");');
+		if ($echo) echo $script;
+		return $script;
+	}
+	
 }
 
 class CP_TextField extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
 		$options['type'] = 'text';
-		$this->name = $name;
-		$owner->add_control($this);
-		$this->owner = $owner;
-		$this->options = $options;
-		$options['onchange'] = parent::event_handler('_change');
-		parent::__construct($name, $options);
-		root()->hooks->action->perform('new_cp_textfield', $this);
+		parent::__construct($name, $options, $owner);
+		$this->bind('change');
 	}
 }
 
@@ -143,13 +169,8 @@ class CP_Button extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
 		$options['type'] = 'submit';
-		$this->name = $name;
-		$owner->add_control($this);
-		$this->owner = $owner;
-		$this->options = $options;
-		$options['onclick'] = isset($options['onclick']) ? $options['onclick'] . parent::event_handler('click') : parent::event_handler('click');
-		$this->options = $options;
-		root()->hooks->action->perform('new_cp_button', $this);
+		parent::__construct($name, $options, $owner);
+		$this->bind('click');
 	}
 	
 }
@@ -157,20 +178,33 @@ class CP_Button extends CP_Control {
 class CP_Editor extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
-		$this->name = $name;
-		$owner->add_control($this);
-		$this->owner = $owner;
-		$options['onchange'] = parent::event_handler('_change');
-		parent::__construct($name, $options);
-		root()->hooks->action->perform('new_cp_editor', $this);
+		$options['id'] = $name;
+		parent::__construct($name, $options, $owner);
+		$this->bind('change');
 	}
 	
-	public function control() {
+	public function markup() {
 		$value = $this->options['value'];
 		unset($this->options['value']);
 		$atts = $this->atts($this->options);
-		$output = "<textarea id=\"{$this->name}\" name=\"{$this->name}\" $atts>$value</textarea>";
-		$output .= "<script>CKEDITOR.replace('{$this->name}');</script>";
+		$event_handler = $this->event_handler('_change');
+		$output = "<textarea class=\"ckeditor\" name=\"{$this->name}\" $atts>$value</textarea>";
+		$output .= "<script>
+			function {$this->name}_fn() {
+				$('textarea#{$this->name}').html(CKEDITOR.instances.{$this->name}.getData());
+				$event_handler
+			}
+			CKEDITOR.replace('{$this->name}'); 
+			CKEDITOR.instances.{$this->name}.on('blur', function() { 
+				{$this->name}_fn();
+			});
+			CKEDITOR.instances.{$this->name}.on('focus', function() { 
+				{$this->name}_fn();
+			});
+			CKEDITOR.instances.{$this->name}.on('click', function() { 
+				{$this->name}_fn();
+			});
+		</script>";
 		return $output;
 	}
 }
@@ -179,15 +213,11 @@ class CP_TextArea extends CP_Control {
 	
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
-		$this->name = $name;
-		$owner->add_control($this);
-		$this->owner = $owner;
-		$options['onchange'] = parent::event_handler('change');
-		parent::__construct($name, $options);
-		root()->hooks->action->perform('new_cp_textarea', $this);
+		parent::__construct($name, $options, $owner);
+		$this->bind('change');
 	}
 	
-	public function control() {
+	public function markup() {
 		$value = $this->options['value'];
 		unset($this->options['value']);
 		$atts = $this->atts($this->options);
@@ -201,9 +231,7 @@ class CP_Hidden extends CP_Control {
 	public function __construct($name, $value, $options = [], $owner) {
 		$options['value'] = $value;
 		$options['type'] = 'hidden';
-		$this->name = $name;
-		parent::__construct($name, $options);
-		root()->hooks->action->perform('new_cp_hidden', $this);
+		parent::__construct($name, $options, $owner);
 	}
 }
 
@@ -211,18 +239,13 @@ class CP_Label extends CP_Control {
 	public function __construct($name, $value, $options = [], $owner) {
 		$options['value'] = $value;
 		$options['name'] = $name;
-		$this->name = $name;
-		$owner->add_control($this);
-		$this->owner = $owner;
-		parent::__construct($name, $options);
-		root()->hooks->action->perform('new_cp_label', $this);
+		parent::__construct($name, $options, $owner);
 	}
 	
-	public function control() {
-		$sessionstate = $this->set_session_state();
+	public function markup() {
 		$atts = $this->atts($this->options);
 		$value = $this->options['value'];
-		$output = "<span $atts>$value</span>$sessionstate";	
+		$output = "<span $atts>$value</span>";	
 		return $output;	
 	}
 }
@@ -230,19 +253,102 @@ class CP_Label extends CP_Control {
 class CP_Timer extends CP_Control {
 
 	public function __construct($name, $interval, $owner) {
-		$this->name = $name;
-		$owner->add_control($this);
-		$this->owner = $owner;
 		$this->interval = $interval;
-		parent::__construct($name, []);
+		parent::__construct($name, [], $owner);
 		root()->hooks->action->perform('new_cp_timer', $this);
 	}
 	
-	public function control() {
-		$sessionstate = $this->set_session_state();
+	public function markup() {
 		$sender = base64_encode(serialize($this));
 		$output = "<script type=\"text/javascript\" name=\"{$this->name}\">var int_{$this->name} = setInterval(function() { cp_ajax('{$this->name}', sessionState,'$sender', 'tick'); }, {$this->interval});</script>$sessionstate";
 		return $output;
 	}
 	
+}
+
+class CP_Table extends CP_Control {
+	
+	public function __construct($name, $data, $keys = false, $options = [], $owner) {
+		$this->table_data = $data;
+		$this->table_key_data = $keys;
+		if (count($data) > 0) {
+			if ($keys) {
+				$keys = array_keys($keys);
+			} else {
+				if (is_object($data[0])) {
+					$keys = $data[0]->columns;
+				} else {
+					$keys = array_keys($data[0]);
+				}
+			}
+		}
+		$this->table_keys = $keys;
+		parent::__construct($name, $options, $owner);
+		root()->hooks->action->perform('new_cp_table', $this);
+	}
+	
+	public function delete_row($rowid) {
+		$animation = 'fadeOut';
+		if (isset($this->options['delete_animation'])) $animation = $this->options['delete_animation'];
+		echo '$(\'table[name="'.$this->name.'"] tr[row-key-val="'.$rowid.'"]\').'.$animation.'();';
+	}
+	
+	public function add_row($row) {
+		
+	}
+	
+	private function _row($row) {
+		$key_data = $this->table_key_data;
+		$keys = $this->table_keys;
+		if (is_array($row)) {
+			$row = json_decode(json_encode($row), false);
+		}
+		$row = root()->hooks->filter->apply('cp_component_table_row_data', $row);
+		$firstcol = in_array('id', $keys) ? 'id' : $keys[0];
+		$firstval = $row->$firstcol;
+		$this->row_key = $firstcol;
+		$row_output = "<tr row-key=\"$firstcol\" row-key-val=\"$firstval\">";
+		foreach ($keys as $col) {
+			$func = isset($key_data[$col]['callback']) ? $key_data[$col]['callback'] : false;
+			$callback = $this->owner && $func ? $this->owner->$func($row) : '';
+			$value = isset($key_data[$col]['value']) ? $key_data[$col]['value'] : $callback;
+			if (is_array($key_data[$col]) && !isset($key_data[$col]['display'])) continue;
+			// Output of column
+			$row_output .= '<td>' . root()->hooks->filter->apply('cp_component_table_cell', $value ?: $row->{$col}) . '</td>';
+		}
+		$row_output .= '</tr>';
+		return $row_output;
+	}
+	
+	public function markup() {
+		$keys = $this->table_keys;
+		$key_data = $this->table_key_data;
+		$data = $this->table_data;
+		$owner = $this->owner;
+		$sessionstate = $this->set_session_state();
+		$atts = $this->atts($this->options);
+		$output = '<table name="'.$this->name.'" '.$atts.'>';
+		$thead = '';
+		$row_output = '';
+		if (count($data) > 0) {
+			foreach ($data as $row) {
+				$row_output .= $this->_row($row);
+			}
+			$thead .= '<tr>';
+			foreach ($keys as $key) {
+				if (is_array($key_data[$key]) && !isset($key_data[$key]['display'])) continue;
+				$sortcol = $key_data && isset($key_data[$key]['no_sort']) && $key_data[$key]['no_sort'];
+				$thead .= '<th>';
+				$thead .= (!$sortcol ? '<a href="#" class="table-sort" data-col="'.$key.'">' : '') . ($key_data ? ($key_data[$key]['display']?:$key) : $key) . (!$sortcol ? '</a>' : '');
+				$thead .= '</th>';
+			}
+			$thead .= '</tr>';
+			$output .= $thead;
+			$output .= $row_output;
+		} else {
+			$output .= '<tr colspan="'.count($keys).'"><td>No Data to Display</td></tr>';
+		}
+		$output .= '</table>' . $sessionstate;
+		return $output;
+	}
 }
