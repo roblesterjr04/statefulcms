@@ -1,6 +1,0 @@
-{
-	"name":"Tickets Module",
-	"description":"Provides Ticketing system.",
-	"main_file":"plugin.php",
-	"slug":"tickets"
-}

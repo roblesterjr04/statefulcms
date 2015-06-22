@@ -1,7 +1,0 @@
-{
-	"name":"Phone System",
-	"description":"Fully functional phone system.",
-	"main_file":"plugin.php",
-	"slug":"phonesystem",
-	"version":"1.0"
-}

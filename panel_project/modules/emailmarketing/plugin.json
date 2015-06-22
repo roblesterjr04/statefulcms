@@ -1,6 +1,0 @@
-{
-	"name":"Email Marketing",
-	"description":"Sign up for email marketing",
-	"main_file":"plugin.php",
-	"slug":"email-marketing"
-}

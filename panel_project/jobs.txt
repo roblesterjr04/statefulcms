@@ -1,3 +1,0 @@
-
-MAILTO=""
-*/2 * * * * /usr/local/php53/bin/php /home/robles83/rmlsoftwaresolutions.com/accounts/execute_cron.php /home/robles83/rmlsoftwaresolutions.com/accounts

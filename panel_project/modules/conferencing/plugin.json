@@ -1,6 +1,0 @@
-{
-	"name":"Conferencing",
-	"description":"Provides user ability to modify conferencing",
-	"main_file":"plugin.php",
-	"slug":"conferencing"
-}

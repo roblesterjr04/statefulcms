@@ -1,6 +1,0 @@
-{
-	"name":"Notify",
-	"description":"Notification module for chris",
-	"main_file":"notify.php",
-	"slug":"cwnotify"
-}

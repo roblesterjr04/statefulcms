@@ -1,7 +1,0 @@
-{
-	"name":"Gridster",
-	"description":"Makes dashboard customizable.",
-	"main_file":"plugin.php",
-	"slug":"gridster",
-	"version":"1.0"
-}
