@@ -32,6 +32,7 @@ class CP_Control {
 	}
 	
 	public function __construct($name, $options, $owner) {
+		$options['data-control'] = 'control';
 		$this->options = $options;
 		$this->name = $name;
 		$this->owner = $owner;
@@ -60,7 +61,7 @@ class CP_Control {
 	private function bind_events() {
 		$output = '';
 		foreach ($this->events as $event) {
-			$handler = $this->event_handler($event == 'change' ? '_change' : $event);
+			$handler = $this->event_handler($event == 'change' || $event == 'keyup' ? '_'.$event : $event);
 			$id = $this->options['id'];
 			$output .= "<script>$('#$id').on('$event', function() { $handler });</script>";
 		}
@@ -160,7 +161,7 @@ class CP_TextField extends CP_Control {
 		$options['value'] = $text;
 		$options['type'] = 'text';
 		parent::__construct($name, $options, $owner);
-		$this->bind('change');
+		$this->bind('keyup');
 	}
 }
 
@@ -187,7 +188,7 @@ class CP_Editor extends CP_Control {
 		$value = $this->options['value'];
 		unset($this->options['value']);
 		$atts = $this->atts($this->options);
-		$event_handler = $this->event_handler('_change');
+		$event_handler = $this->event_handler('_keyup');
 		$output = "<textarea class=\"ckeditor\" name=\"{$this->name}\" $atts>$value</textarea>";
 		$output .= "<script>
 			function {$this->name}_fn() {
@@ -195,13 +196,16 @@ class CP_Editor extends CP_Control {
 				$event_handler
 			}
 			CKEDITOR.replace('{$this->name}'); 
-			CKEDITOR.instances.{$this->name}.on('blur', function() { 
+			/*CKEDITOR.instances.{$this->name}.on('blur', function() { 
 				{$this->name}_fn();
 			});
 			CKEDITOR.instances.{$this->name}.on('focus', function() { 
 				{$this->name}_fn();
 			});
 			CKEDITOR.instances.{$this->name}.on('click', function() { 
+				{$this->name}_fn();
+			});*/
+			$(document).on('mousemove', function() {
 				{$this->name}_fn();
 			});
 		</script>";

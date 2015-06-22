@@ -235,7 +235,7 @@ class CP_Page extends CP_Object {
 		$result = $this->save($data);
 		//$sender->disable();
 		if ($result) root()->iface->console('(' . $data['name'] . ') saved successfully.');
-		root()->iface->refresh();
+		//root()->iface->refresh();
 	}
 	
 	/**
@@ -256,7 +256,7 @@ class CP_Page extends CP_Object {
 	 * @param mixed $data
 	 * @return void
 	 */
-	public function page_title_change($sender, $data) {
+	public function page_title_keyup($sender, $data) {
 		$value = $this->controls->page_title->val();
 		$this->controls->header_label->val($value);
 		$this->controls->page_save->enable();

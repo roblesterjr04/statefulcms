@@ -25,7 +25,7 @@ $object = root()->decode($object);
 $func = $_REQUEST['callback'] . '_' . $_REQUEST['event'];
 
 // We can't change yet, we need to update the state with our changed value, and once the new state is saved. We can call the change callback.
-if ($_REQUEST['event'] == '_change') {
+if ($_REQUEST['event'] == '_change' || $_REQUEST['event'] == '_keyup') {
 	if (get_class($sender) == 'CP_Editor') {
 		echo "var newval = CKEDITOR.instances.$callback.getData();";
 	} else {
@@ -33,7 +33,7 @@ if ($_REQUEST['event'] == '_change') {
 	}
 	$sender = $_REQUEST['sender'];
 	//echo "console.log('Executing state update: '+newval);\n";
-	echo "cp_ajax('$callback', sessionState, '$sender', 'update_state', newval, true);\n\n";
+	echo "cp_ajax('$callback', sessionState, '$sender', 'update_state', newval, true, '".substr($_REQUEST['event'],1)."');\n\n";
 }
 
 // We are being asked to update the state. 
