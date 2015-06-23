@@ -68,22 +68,18 @@ class DB {
 	 * @param mixed $table
 	 * @return void
 	 */
-	public static function insert($table) {
-		$data = array_slice(func_get_args(), 1);
-		$insertid = [];
-		foreach($data as $row) {
-			$data_string = '';
-			$values = [];
-			foreach ($row as $column=>$value) {
-				$values[] = "$column = '$value'";
-			}
-			$data_string = implode(',', $values);
-			$statement = "insert into $table set $data_string";
-			$this->mySql->query($statement);
-			$insertid[] = $this->mySql->insert_id;
+	public function insert($table, $data) {
+		$table = $this->prefix . $table;
+		$values = [];
+		$columns = [];
+		foreach ($data as $column=>$value) {
+			$values[] = "'$value'";
+			$columns[] = $column;
 		}
-		if (count($insertid) == 1) return $insertid[0];
-		else return $insertid;
+		$data_string = implode(',', $values);
+		$column_string = implode(',', $columns);
+		$statement = "insert into $table ($column_string) values($data_string)";
+		return $this->mySql->query($statement);
 	}
 	
 	public function update($table, $data, $where = false) {

@@ -144,7 +144,7 @@ class CP_Control {
 		return base64_encode(serialize($object));
 	}
 	
-	protected function bind($event) {
+	public function bind($event) {
 		$this->events[] = $event;
 	}
 	
@@ -161,6 +161,7 @@ class CP_TextField extends CP_Control {
 		$options['value'] = $text;
 		$options['type'] = 'text';
 		parent::__construct($name, $options, $owner);
+		$this->bind('click');
 		$this->bind('keyup');
 	}
 }
@@ -181,7 +182,6 @@ class CP_Editor extends CP_Control {
 		$options['value'] = $text;
 		$options['id'] = $name;
 		parent::__construct($name, $options, $owner);
-		$this->bind('change');
 	}
 	
 	public function markup() {
@@ -196,21 +196,14 @@ class CP_Editor extends CP_Control {
 				$event_handler
 			}
 			CKEDITOR.replace('{$this->name}'); 
-			/*CKEDITOR.instances.{$this->name}.on('blur', function() { 
-				{$this->name}_fn();
-			});
-			CKEDITOR.instances.{$this->name}.on('focus', function() { 
-				{$this->name}_fn();
-			});
-			CKEDITOR.instances.{$this->name}.on('click', function() { 
-				{$this->name}_fn();
-			});*/
-			$(document).on('mousemove', function() {
-				{$this->name}_fn();
-			});
 		</script>";
 		return $output;
 	}
+	
+	public function update_state() {
+		echo "{$this->name}_fn();";
+	}
+	
 }
 
 class CP_TextArea extends CP_Control {
@@ -259,7 +252,7 @@ class CP_Timer extends CP_Control {
 	public function __construct($name, $interval, $owner) {
 		$this->interval = $interval;
 		parent::__construct($name, [], $owner);
-		root()->hooks->action->perform('new_cp_timer', $this);
+		$this->bind('tick');
 	}
 	
 	public function markup() {

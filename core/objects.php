@@ -8,6 +8,9 @@ class CP_Object {
 	
 	public $is_public = true;
 	
+	public $object_table = 'object_items';
+	public $object_meta_table = 'objectmeta';
+	
 	public function __construct($name) {
 		$this->_slug = $name;
 		if (isset($_GET['mod']) && $_GET['mod'] == $name) $this->active = true;
@@ -31,18 +34,27 @@ class CP_Object {
 		$type = $this->_slug;
 		$id = $data['id'];
 		$name = $data['name'];
-		$meta = $data['meta'];
-		$object_data = ['id'=>$id,'name'=>$name,'object_type'=>$type];
-		$meta_data = $data['meta'];
-		$saved = root()->db->update('object_items', $object_data, ['id'=>$id]);
-		foreach ($data['meta'] as $key=>$value) {
-			$saved = root()->db->update('objectmeta', ['meta_value'=>$value], ['meta_item'=>$id, 'meta_object'=>$type, 'meta_name'=>$key]);
+		$meta = isset($data['meta']) ? $data['meta'] : false;
+		$object_data = $data;
+		if ($this->object_table == 'object_items') $object_data['object_type'] = $type;
+		unset($object_data['meta']);
+		//$meta_data = $data['meta'];
+		$saved = root()->db->update($this->object_table, $object_data, ['id'=>$id]);
+		if ($meta) {
+			foreach ($meta as $key=>$value) {
+				$check = root()->db->get_where('objectmeta', ['meta_item'=>$id, 'meta_object'=>$type, 'meta_name'=>$key]);
+				if ($check->rows) {
+					$saved = root()->db->update('objectmeta', ['meta_value'=>$value], ['meta_item'=>$id, 'meta_object'=>$type, 'meta_name'=>$key]);
+				} else {
+					$saved = root()->db->insert('objectmeta', ['meta_value'=>$value, 'meta_item'=>$id, 'meta_object'=>$type, 'meta_name'=>$key]);
+				}
+			}
 		}
 		return $saved;
 	}
 	
 	public function remove($id) {
-		$table = root()->db->prefix . 'object_items';
+		$table = root()->db->prefix . $this->object_table;
 		root()->db->mySql->query("delete from $table where id = $id");
 	}
 	
@@ -76,10 +88,10 @@ class CP_Object {
 	}
 	
 	public function get_item($id) {
-		$item = root()->db->get_where('object_items', ['id'=>$id], 1);
+		$item = root()->db->get_where($this->object_table, ['id'=>$id], 1);
 		if ($item) {
 			$row = $item->rows[0];
-			$meta = root()->db->get_where('objectmeta', ['meta_item'=>$row->id, 'meta_object'=>$this->_slug])->rows;
+			$meta = root()->db->get_where($this->object_meta_table, ['meta_item'=>$row->id, 'meta_object'=>$this->_slug])->rows;
 			if ($meta) {
 				$meta_array = [];
 				foreach ($meta as $meta_row) {
@@ -232,10 +244,21 @@ class CP_Page extends CP_Object {
 				'date_modified' => date('n/j/Y')
 			]
 		];
+		$name = $data['name'];
+		$data = root()->hooks->filter->apply('cp_page_save_data', $data);
 		$result = $this->save($data);
 		//$sender->disable();
-		if ($result) root()->iface->console('(' . $data['name'] . ') saved successfully.');
+		if ($result) {
+			root()->iface->console('(' . $data['name'] . ') saved successfully.');
+			root()->iface->alert("Page '$name' saved successfully.");
+		} else {
+			root()->iface->alert("Page '$name' failed to save.");
+		}
 		//root()->iface->refresh();
+	}
+	
+	public function page_save_mouseenter($sender) {
+		$this->controls->page_content->update_state();
 	}
 	
 	/**
@@ -259,7 +282,6 @@ class CP_Page extends CP_Object {
 	public function page_title_keyup($sender, $data) {
 		$value = $this->controls->page_title->val();
 		$this->controls->header_label->val($value);
-		$this->controls->page_save->enable();
 	}
 	
 	public function front_end() {
@@ -283,6 +305,7 @@ class CP_Page extends CP_Object {
 			$title_field = new CP_TextField('page_title', $item->name, array('placeholder'=>'Page Title', 'class'=>'form-control'), $this);
 			$editor = new CP_Editor('page_content', $item->page_content, array('class'=>'form-control'), $this);
 			$button = new CP_Button('page_save', 'Save', array('class'=>'btn btn-block btn-primary'), $this);
+			$button->bind('mouseenter');
 			$header = new CP_Label('header_label', $item->name, [], $this);
 			?>
 			<div class="row">
