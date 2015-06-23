@@ -149,17 +149,20 @@ class CP_Users extends CP_Object {
 		} else {
 			$this->state->user_to_save = $_GET['id'];
 			$item = $this->get_item($_GET['id']);
-			$header = new CP_Label('header_label', $item->first_name . ' ' . $item->last_name, [], $this);
+			$header = new CP_Label('header_label', $item->first_name . ' ' . $item->middle_name . ' ' . $item->last_name, [], $this);
 			$first_name = new CP_TextField('first_name', $item->first_name, ['class'=>'form-control'], $this);
+			$middle_name = new CP_TextField('middle_name', $item->middle_name, ['class' => 'form-control'], $this);
 			$last_name = new CP_TextField('last_name', $item->last_name, ['class'=>'form-control'], $this);
 			$email = new CP_TextField('email_address', $item->email, ['class'=>'form-control', 'type'=>'email'], $this);
-			
 			$button = new CP_Button('save_user', 'Save', ['class'=>'btn btn-primary'], $this);
+			$button->disabled = true;
 			
 			?>
 				<h2><? $header->display() ?></h2>
 				<h4>First Name</h4>
 				<? $first_name->display() ?>
+				<h4>Middle Name</h4>
+				<? $middle_name->display() ?>
 				<h4>Last Name</h4>
 				<? $last_name->display() ?>
 				<h4>Email Address</h4>
@@ -172,11 +175,17 @@ class CP_Users extends CP_Object {
 	
 	public function first_name_keyup($sender) {
 		$value = $this->controls->first_name->val();
+		$middle = $this->controls->middle_name->val();
 		$last = $this->controls->last_name->val();
-		$this->controls->header_label->val($value . ' ' . $last);
+		$this->controls->header_label->val($value . ' ' . $middle . ' ' . $last);
+		$this->controls->save_user->enable();
 	}
 	
 	public function last_name_keyup($sender) {
+		$this->first_name_keyup($sender);
+	}
+	
+	public function middle_name_keyup($sender) {
 		$this->first_name_keyup($sender);
 	}
 	
@@ -190,7 +199,8 @@ class CP_Users extends CP_Object {
 			'last_name' => $controls->last_name->val(),
 			'email' => $controls->email_address->val(),
 			'meta' => [
-				'date_modified' => date('n/j/Y')
+				'date_modified' => date('n/j/Y'),
+				'middle_name' => $controls->middle_name->val()
 			]
 		];
 		$data = root()->hooks->filter->apply('cp_user_save_data', $data);
@@ -199,6 +209,7 @@ class CP_Users extends CP_Object {
 		if ($result) {
 			root()->iface->console('(' . $data['first_name'] . ') saved successfully.');
 			root()->iface->alert("User '$fname' saved successfully.");
+			$this->controls->save_user->disable();
 		} else {
 			root()->iface->alert("User '$fname' failed to save.");
 		}

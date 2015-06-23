@@ -254,7 +254,6 @@ class CP_Page extends CP_Object {
 		} else {
 			root()->iface->alert("Page '$name' failed to save.");
 		}
-		//root()->iface->refresh();
 	}
 	
 	public function page_save_mouseenter($sender) {
@@ -307,10 +306,13 @@ class CP_Page extends CP_Object {
 			$button = new CP_Button('page_save', 'Save', array('class'=>'btn btn-block btn-primary'), $this);
 			$button->bind('mouseenter');
 			$header = new CP_Label('header_label', $item->name, [], $this);
+			
+			$notices = new CP_NoticeArea('notice_area', [], $this);
 			?>
 			<div class="row">
 				<div class="col-sm-9">
 					<h2><? $header->display() ?></h2>
+					<? $notices->display() ?>
 					<h4>Title</h4>
 					<? $title_field->display() ?>
 					<h4>Content</h4>

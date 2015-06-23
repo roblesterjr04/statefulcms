@@ -21,6 +21,7 @@ class CP_Control {
 	public $name;
 	public $owner;
 	public $events = [];
+	public $disabled = false;
 	
 	protected function atts($options) {
 		$atts = [];
@@ -45,6 +46,7 @@ class CP_Control {
 	
 	public function markup() {
 		if (!isset($this->options['id'])) $this->options['id'] = $this->name;
+		if ($this->disabled) $this->options['disabled'] = 'disabled';
 		$atts = $this->atts($this->options);
 		$output = "<input name=\"{$this->name}\" $atts/>";
 		return root()->hooks->filter->apply('cp_fields_control', $output);
@@ -249,9 +251,9 @@ class CP_Label extends CP_Control {
 
 class CP_Timer extends CP_Control {
 
-	public function __construct($name, $interval, $owner) {
+	public function __construct($name, $interval, $options = [], $owner) {
 		$this->interval = $interval;
-		parent::__construct($name, [], $owner);
+		parent::__construct($name, $options, $owner);
 		$this->bind('tick');
 	}
 	
@@ -259,6 +261,35 @@ class CP_Timer extends CP_Control {
 		$sender = base64_encode(serialize($this));
 		$output = "<script type=\"text/javascript\" name=\"{$this->name}\">var int_{$this->name} = setInterval(function() { cp_ajax('{$this->name}', sessionState,'$sender', 'tick'); }, {$this->interval});</script>$sessionstate";
 		return $output;
+	}
+	
+}
+
+class CP_NoticeArea extends CP_Control {
+	
+	public $notices = [];
+	
+	public function __construct($name, $options = [], $owner) {
+		$options['data-notice'] = 'notice-area';
+		parent::__construct($name, $options, $owner);
+	}
+	
+	public function markup() {
+		$atts = $this->atts($this->options);
+		$output = "<div id=\"{$this->name}\" $atts></div>";
+		return $output;
+	}
+	
+	public function add_notice($notice, $name = 'notice', $type = 'primary', $time = 0) {
+		$this->notices[$name] = [
+			'type'=>$type,
+			'time'=>$time,
+			'message'=>$notice
+		];
+	}
+	
+	public function show_notice($notice) {
+		
 	}
 	
 }
