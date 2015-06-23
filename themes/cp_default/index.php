@@ -4,6 +4,7 @@
 	</head>
 	<body>
 		<div class="container">
+			<h1>This is a cool bootstrap site.</h1>
 			<div class="row">
 				<div class="col-md-2 col-sm-3">
 					<ul class="nav">

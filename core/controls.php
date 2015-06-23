@@ -65,7 +65,7 @@ class CP_Control {
 		foreach ($this->events as $event) {
 			$handler = $this->event_handler($event == 'change' || $event == 'keyup' ? '_'.$event : $event);
 			$id = $this->options['id'];
-			$output .= "<script>$('#$id').on('$event', function() { $handler });</script>";
+			$output .= "<script>$('#$id').on('$event', function() { $handler });</script>\n";
 		}
 		return $output;
 	}
