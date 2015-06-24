@@ -21,7 +21,8 @@ class CP_Object {
 	}
 	
 	public function admin() {
-		echo '<h2>' . $this->title() . '</h2>';
+		echo '<h2>' . $this->title();
+		echo '<a class="btn btn-primary" href="'.$this->edit_link(0).'">Add New</a></h2>';
 		$this->object_list();
 	}
 	
@@ -39,7 +40,14 @@ class CP_Object {
 		if ($this->object_table == 'object_items') $object_data['object_type'] = $type;
 		unset($object_data['meta']);
 		//$meta_data = $data['meta'];
-		$saved = root()->db->update($this->object_table, $object_data, ['id'=>$id]);
+		$check = root()->db->get_where($this->object_table, ['id'=>$id]);
+		if ($check->rows) {
+			$saved = root()->db->update($this->object_table, $object_data, ['id'=>$id]);
+		} else {
+			unset($object_data['id']);
+			$saved = root()->db->insert($this->object_table, $object_data);
+			if ($saved) $id = $saved;
+		}
 		if ($meta) {
 			foreach ($meta as $key=>$value) {
 				$check = root()->db->get_where('objectmeta', ['meta_item'=>$id, 'meta_object'=>$type, 'meta_name'=>$key]);
@@ -54,8 +62,8 @@ class CP_Object {
 	}
 	
 	public function remove($id) {
-		$table = root()->db->prefix . $this->object_table;
-		root()->db->mySql->query("delete from $table where id = $id");
+		root()->db->delete($this->object_table, ['id' => $id]);
+		root()->db->delete('objectmeta', ['meta_item'=>$id, 'meta_object'=>$this->_slug]);
 	}
 	
 	public function menu_parts() {
@@ -121,11 +129,15 @@ class CP_Object {
 	}
 	
 	public function edit_link($id = null) {
-		return root()->settings->get('cp_site_url').'/admin/?mod='.$this->_slug.($id?'&id='.$id:'');
+		return root()->settings->get('cp_site_url').'/admin/?mod='.$this->_slug.(intval($id) || $id === 0 ? '&id='.$id : '');
 	}
 	
-	public function get_objects($limit = null, $offset = null) {
-		$items = root()->db->get_where('object_items', array('object_type'=>$this->_slug), $limit, $offset);
+	public function view_link($id = null) {
+		return root()->settings->get('cp_site_url').'/?mod='.$this->_slug.($id?'&id='.$id:'');
+	}
+	
+	public function get_objects($limit = null, $offset = null, $order = null) {
+		$items = root()->db->get_where($this->object_table, array('object_type'=>$this->_slug), $limit, $offset);
 		$objects = [];
 		if ($items->rows) {
 			foreach ($items->rows as $row) {
@@ -165,7 +177,7 @@ class CP_Objects {
 		if ($slug) {
 			$key = $slug;
 			if (class_exists($key)) {
-				$item = new $key;
+				$item = new $key();
 			} else {
 				$item = new CP_Object($key);
 			}
@@ -215,6 +227,10 @@ class CP_Page extends CP_Object {
 	
 	public function __construct() {
 		parent::__construct('CP_Page');
+		root()->hooks->filter->add('theme_part', function($content) {
+			if ($_GET['mod'] == 'CP_Page' && $content == 'index') $content = 'page';
+			return $content;
+		});
 	}
 	
 	public function title() {
@@ -244,8 +260,8 @@ class CP_Page extends CP_Object {
 				'date_modified' => date('n/j/Y')
 			]
 		];
-		$name = $data['name'];
 		$data = root()->hooks->filter->apply('cp_page_save_data', $data);
+		$name = $data['name'];
 		$result = $this->save($data);
 		//$sender->disable();
 		if ($result) {
@@ -258,16 +274,8 @@ class CP_Page extends CP_Object {
 	
 	public function page_save_mouseenter($sender) {
 		$this->controls->page_content->update_state();
-	}
-	
-	/**
-	 * Function for the change event on the page_content field of the interface.
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function page_content_change() {
-		//$this->controls->page_save->enable();
+		// Updates the object state before the user clicks the button.
+		// This is primarily for the editor, since the editors state is not being updated regularly.
 	}
 	
 	/**
@@ -295,10 +303,8 @@ class CP_Page extends CP_Object {
 	 * @param bool $id (default: false)
 	 * @return void
 	 */
-	public function admin($id = false) {
-		if (empty($_GET['id']) && !$id) {
-			parent::admin();
-		} else {
+	public function admin() {
+		if ($_GET['id'] === 0 || isset($_GET['id'])) {
 			$this->state->page_save_id = $id ?: $_GET['id'];
 			$item = $this->get_item($_GET['id']);
 			$title_field = new CP_TextField('page_title', $item->name, array('placeholder'=>'Page Title', 'class'=>'form-control'), $this);
@@ -327,6 +333,8 @@ class CP_Page extends CP_Object {
 				</div>
 			</div>
 			<?
+		} else {
+			parent::admin();
 		}
 	}
 	

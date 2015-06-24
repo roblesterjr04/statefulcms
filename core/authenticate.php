@@ -116,19 +116,35 @@ class CP_Users extends CP_Object {
 	
 	public function get_objects($limit = null, $offset = null) {
 		$items = root()->db->get('users', $limit, $offset);
-		return $items->rows;
+		$objects = [];
+		if ($items->rows) {
+			foreach ($items->rows as $row) {
+				$meta = root()->db->get_where('objectmeta', ['meta_item'=>$row->id, 'meta_object'=>$this->_slug])->rows;
+				if ($meta) {
+					$meta_array = [];
+					foreach ($meta as $meta_row) {
+						$row->{$meta_row->meta_name}=$meta_row->meta_value;
+						$row->columns[] = $meta_row->meta_name;
+						$meta_array[$meta_row->meta_name]=$meta_row->meta_value;
+					}
+				}
+				$row->row_array = array_merge($meta_array, $row->row_array);
+				$objects[] = $row;
+			}
+		}
+		return $objects;
 	}
 	
-	public function object_list($limit = null, $offset = null) {
-		$items = $this->get_objects($limit, $offset);
+	public function object_list($limit = null, $offset = null, $order = null) {
+		$items = $this->get_objects($limit, $offset, $order);
 		$columns = [
 			'first_name'=>[
-				'display'=>'Name'
+				'display'=>'Name',
+				'callback'=>'user_full_name'
 			],
 			'email'=>[
 				'display'=>'Email', 
 				'no_sort'=>true,
-				'callback'=>'user_cell_link'
 			], 
 			'user_name'=>[
 				'display'=>'User Name'
@@ -138,14 +154,12 @@ class CP_Users extends CP_Object {
 		$table->display();
 	}
 	
-	public function user_cell_link($row) {
-		return '<a href="'.$this->edit_link($row->id).'">'.$row->email.'</a>';
+	public function user_full_name($row) {
+		return '<a href="'.$this->edit_link($row->id).'">'.$row->first_name . ' ' . $row->middle_name . ' ' . $row->last_name.'</a>';
 	}
 	
 	public function admin() {
-		if (empty($_GET['id'])) {
-			parent::admin();
-		} else {
+		if ($_GET['id'] === 0 || isset($_GET['id'])) {
 			$this->state->user_to_save = $_GET['id'];
 			$item = $this->get_item($_GET['id']);
 			$header = new CP_Label('header_label', $item->first_name . ' ' . $item->middle_name . ' ' . $item->last_name, [], $this);
@@ -153,6 +167,8 @@ class CP_Users extends CP_Object {
 			$middle_name = new CP_TextField('middle_name', $item->middle_name, ['class' => 'form-control'], $this);
 			$last_name = new CP_TextField('last_name', $item->last_name, ['class'=>'form-control'], $this);
 			$email = new CP_TextField('email_address', $item->email, ['class'=>'form-control', 'type'=>'email'], $this);
+			$username = new CP_TextField('user_name', $item->user_name, ['class'=>'form-control'], $this);
+			$password = new CP_TextField('password', '', ['class'=>'form-control', 'type'=>'password'], $this);
 			$button = new CP_Button('save_user', 'Save', ['class'=>'btn btn-primary'], $this);
 			$button->disabled = true;
 			
@@ -166,9 +182,15 @@ class CP_Users extends CP_Object {
 				<? $last_name->display() ?>
 				<h4>Email Address</h4>
 				<? $email->display() ?>
+				<h4>User Name</h4>
+				<? $username->display() ?>
+				<h4>Password</h4>
+				<? $password->display() ?>
 				<br/>
 				<? $button->display() ?>
 			<?
+		} else {
+			parent::admin();
 		}
 	}
 	
@@ -188,6 +210,18 @@ class CP_Users extends CP_Object {
 		$this->first_name_keyup($sender);
 	}
 	
+	public function email_address_keyup($sender) {
+		$this->first_name_keyup($sender);
+	}
+	
+	public function user_name_keyup($sender) {
+		$this->first_name_keyup($sender);
+	}
+	
+	public function password_keyup($sender) {
+		$this->first_name_keyup($sender);
+	}
+	
 	public function save_user_click($sender) {
 		$controls = $this->controls;
 		$id = $this->state->user_to_save;
@@ -197,6 +231,8 @@ class CP_Users extends CP_Object {
 			'first_name' => $controls->first_name->val(),
 			'last_name' => $controls->last_name->val(),
 			'email' => $controls->email_address->val(),
+			'user_name' => $controls->user_name->val(),
+			'pass_word' => md5($controls->password->val()),
 			'meta' => [
 				'date_modified' => date('n/j/Y'),
 				'middle_name' => $controls->middle_name->val()

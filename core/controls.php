@@ -161,7 +161,7 @@ class CP_Control {
 class CP_TextField extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
-		$options['type'] = 'text';
+		if (!isset($options['type'])) $options['type'] = 'text';
 		parent::__construct($name, $options, $owner);
 		$this->bind('click');
 		$this->bind('keyup');

@@ -79,7 +79,9 @@ class DB {
 		$data_string = implode(',', $values);
 		$column_string = implode(',', $columns);
 		$statement = "insert into $table ($column_string) values($data_string)";
-		return $this->mySql->query($statement);
+		$result = $this->mySql->query($statement) === true;
+		if ($result) $result = $this->mySql->insert_id;
+		return $result;
 	}
 	
 	public function update($table, $data, $where = false) {
@@ -92,7 +94,7 @@ class DB {
 		}
 		$data_string = implode(',', $values);
 		$statement = "update $table set $data_string $where";
-		return $this->mySql->query($statement);
+		return $this->mySql->query($statement) === true;
 	}
 	
 	public function delete($table, $where = false) {
@@ -100,14 +102,15 @@ class DB {
 		$table = $this->prefix . $table;
 		$where = $where ? 'where ' . $this->_parse_where($where) : '';
 		$statement = "delete from $table $where";
-		return $this->mySql->query($statement);
+		return $this->mySql->query($statement) === true;
 	}
 	
 	private function _parse_where($where) {
 		if (is_string($where)) return $where;
 		$output = [];
 		foreach ($where as $key=>$value) {
-			$output[] = "$key = '$value'";
+			if (is_int($value) === false) $value = "'$value'";
+			$output[] = "$key = $value";
 		}
 		return implode(' AND ', $output);
 	}

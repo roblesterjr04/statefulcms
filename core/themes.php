@@ -24,13 +24,14 @@ class CP_Themes {
 	
 	public function get_theme_part($slug, $output = true) {
 		global $root;
+		$slug = root()->hooks->filter->apply('theme_part', $slug);
 		$theme_part = $this->current_theme_dir . '/' . $slug . '.php';
 		if ($output) {
 			include($theme_part);
 		} else {
 			$output = file_get_contents($theme_part);
 		}
-		CP_Action::perform($slug . '_loaded');
+		root()->hooks->action->perform($slug . '_loaded');
 		if ($output) return $output;
 	}
 	
