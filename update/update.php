@@ -127,6 +127,7 @@ class Update_Control extends CP_Object {
 	public function update_button_click($sender) {
 		$updating = root()->update->update_core($this->state->update_version);
 		$this->controls->update_label->val('Done.');
+		$this->iface->refresh();
 	}
 	
 	public function admin() {
