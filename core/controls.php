@@ -342,11 +342,11 @@ class CP_Checkbox extends CP_Control {
 }
 
 class CP_Radio extends CP_Control {
-	public function __construct($name, $text, $options = [], $owner) {
+	public function __construct($name, $group, $text, $options = [], $owner) {
 		$options['text'] = $text;
 		$options['type'] = 'radio';
 		$options['id'] = $name;
-		$options['name'] = $name;
+		$options['name'] = $group;
 		parent::__construct($name, $options, $owner)->bind('change');
 		return $this;
 	}

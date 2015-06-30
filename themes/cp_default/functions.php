@@ -51,6 +51,8 @@ class default_theme extends CP_Object {
 		$item = new CP_Select_Option('option');
 		$item_2 = new CP_Select_Option('option 2');
 		$test_dropdown = new CP_Select('test_dropdown', [$item, $item_2], false, ['class'=>'form-control'], $this);
+		$test_radio_1 = new CP_Radio('test_radio_1', 'test_radio_group', 'My Radio 1', ['checked'=>'checked'], $this);
+		$test_radio_2 = new CP_Radio('test_radio_2', 'test_radio_group', 'My Radio 2', [], $this);
 		?>
 			<div class="row">
 				<div class="col-sm-6">
@@ -58,6 +60,8 @@ class default_theme extends CP_Object {
 						<? $require_login_box->display() ?>
 					</div>
 					<? $test_dropdown->display() ?>
+					<? $test_radio_1->display() ?>
+					<? $test_radio_2->display() ?>
 				</div>
 			</div>
 		<?
