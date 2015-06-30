@@ -32,8 +32,45 @@ class CP_Update {
 		
 	}
 	
+	private function delTree($dir) { 
+		$files = array_diff(scandir($dir), array('.','..')); 
+		foreach ($files as $file) { 
+			(is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file"); 
+		} 
+		return rmdir($dir); 
+	}
+	
 	public function update_core($update) {
 		$package = file_get_contents('https://github.com/roblesterjr04/statefulcms/archive/master.zip');
+		file_put_contents(__DIR__ . '/update_package.zip', $package);
+		
+		mkdir(__DIR__ . '/statefulcms-master');
+		
+		$zip = zip_open(__DIR__ . '/update_package.zip');
+		if ($zip) {
+			while ($zip_entry = zip_read($zip)) {
+				$entry_name = zip_entry_name($zip_entry);
+				$directory = substr($entry_name, strlen($entry_name) - 1, 1) == '/';
+				$fp = fopen(__DIR__ . '/'.$entry_name, "w");
+				if (zip_entry_open($zip, $zip_entry, "r")) {
+					if ($directory) {
+						mkdir(__DIR__ . '/'.$entry_name);
+					} else {
+						$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+						fwrite($fp,"$buf");
+						zip_entry_close($zip_entry);
+						fclose($fp);
+					}
+				}
+			}
+			zip_close($zip);
+		}
+		
+		rename(__DIR__ . '/statefulcms-master/core', __DIR__ . '/../core');
+		
+		$this->delTree(__DIR__ . '/statefulcms-master');
+		unlink(__DIR__ . '/update_package.zip');
+		
 		root()->settings->set('running_sha', $update);
 		return true;
 	}
