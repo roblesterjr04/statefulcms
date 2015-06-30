@@ -45,7 +45,6 @@ class CP_Update {
 		foreach ($files as $file) { 
 			(is_dir("$dir/$file")) ? $this->replaceTree("$dir/$file") : rename("$dir/$file", "$new/$file"); 
 		} 
-		//return rmdir($dir);
 	}
 	
 	public function update_core($update) {
@@ -82,10 +81,11 @@ class CP_Update {
 			$line_parts = explode(':', $line);
 			if (isset($line_parts[0]) && isset($line_parts[1])) {
 				if ($line_parts[0] == 'Replace') {
-					if (is_dir(trim($line_parts[1]))) {
-						$this->replaceTree(__DIR__ . '/statefulcms-master/' . trim($line_parts[1]), __DIR__ . '/../' . trim($line_parts[1]));
+					$value = trim($line_parts[1]);
+					if (is_dir($value)) {
+						$this->replaceTree(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
 					} else {
-						rename(__DIR__ . '/statefulcms-master/' . trim($line_parts[1]), __DIR__ . '/../' . trim($line_parts[1]));
+						rename(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
 					}
 				}
 				if ($line_parts[0] == 'Setting') {
@@ -94,10 +94,11 @@ class CP_Update {
 					root()->settings->set($setting[0], $setting[1]);
 				}
 				if ($line_parts[0] == 'Remove') {
-					if (is_dir(trim($line_parts[1]))) {
-						$this->delTree(__DIR__ . '/../' . trim($line_parts[1]));
+					$value = trim($line_parts[1]);
+					if (is_dir($value)) {
+						$this->delTree(__DIR__ . '/../' . $value);
 					} else {
-						unlink(__DIR__ . '/../' . trim($line_parts[1]));
+						unlink(__DIR__ . '/../' . $value);
 					}
 				}
 			}
