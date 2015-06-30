@@ -95,9 +95,9 @@ class CP_Update {
 				}
 				if ($line_parts[0] == 'Remove') {
 					if (is_dir(trim($line_parts[1]))) {
-						$this->delTree(trim($line_parts[1]));
+						$this->delTree(__DIR__ . '/../' . trim($line_parts[1]));
 					} else {
-						unlink(trim($line_parts[1]));
+						unlink(__DIR__ . '/../' . trim($line_parts[1]));
 					}
 				}
 			}
