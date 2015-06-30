@@ -1,35 +1,39 @@
 <?
 	
-require_once '../cp-config.php';
-require_once '../core/init.php';
-	
-require_once(__DIR__ . '/client/GitHubClient.php');
+//if (!defined(CP_WORKING_DIR)) exit('Direct access not allowed');
 
-$owner = 'roblesterjr04';
-$repo = 'statefulcms';
-
-$client = new GitHubClient();
-$client->setPage();
-$client->setPageSize(1);
-$commits = $client->repos->commits->listCommitsOnRepository($owner, $repo);
-
-//echo "Count: " . count($commits) . "\n";
-foreach($commits as $commit)
-{
-	/* @var $commit GitHubCommit */
-	//echo get_class($commit) . " - Sha: " . $commit->getSha() . "\n";
+class CP_Update {
 	
-	$running_sha = root()->settings->get('running_sha');
-	$current_sha = $commit->getSha();
+	public $version;
 	
-	echo $running_sha == $current_sha ? 'Up to date.' : 'Needs update';
-    
+	public function __construct() {
+		$this->version = root()->settings->get('running_sha');
+	}
+	
+	public function has_update() {
+		
+		require_once(__DIR__ . '/client/GitHubClient.php');
+	
+		$owner = 'roblesterjr04';
+		$repo = 'statefulcms';
+		
+		$client = new GitHubClient();
+		$client->setPage();
+		$client->setPageSize(1);
+		$commits = $client->repos->commits->listCommitsOnRepository($owner, $repo);
+		
+		foreach($commits as $commit)
+		{
+			$running_sha = $this->version;
+			$current_sha = $commit->getSha();
+			
+			return $running_sha == $current_sha ? false : $current_sha;
+		}
+		
+	}
+	
+	public function update_core() {
+		$package = file_get_contents('https://github.com/roblesterjr04/statefulcms/archive/master.zip');
+	}
+
 }
-
-/*$commits = $client->getNextPage();
-
-echo "Count: " . count($commits) . "\n";
-foreach($commits as $commit)
-{
-    echo get_class($commit) . " - Sha: " . $commit->getSha() . "\n";
-}*/

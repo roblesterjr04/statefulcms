@@ -19,6 +19,7 @@ class CP_Foundation {
 	public $components;
 	public $fields;
 	public $core;
+	public $update;
 	
 	public function __construct() {
 		
@@ -34,6 +35,7 @@ class CP_Foundation {
 		$this->components = new CP_Components();
 		$this->authentication = new CP_Login();
 		$this->iface = new CP_Interface();
+		$this->update = new CP_Update();
 		
 		$this->themes->init_theme();
 		$this->objects->init_global();

@@ -62,6 +62,7 @@ class default_theme extends CP_Object {
 					<? $test_dropdown->display() ?>
 					<? $test_radio_1->display() ?>
 					<? $test_radio_2->display() ?>
+					<? echo root()->update->has_update() ?>
 				</div>
 			</div>
 		<?
