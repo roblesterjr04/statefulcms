@@ -1,4 +1,4 @@
 Version: 0.2
 Replace: core
+Replace: update
 Replace: themes/cp_default
-Remove: update/index.php
