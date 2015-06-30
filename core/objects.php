@@ -166,7 +166,8 @@ class CP_Object {
 	
 	public function object_list($limit = null, $offset = null) {
 		$items = $this->get_objects($limit, $offset);
-		echo root()->components->table($items);
+		$table = new CP_Table('list_table', $items, false, ['class'=>'table'], $this);
+		$table->display();
 	}
 	
 }

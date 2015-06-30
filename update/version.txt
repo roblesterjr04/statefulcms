@@ -1,4 +1,8 @@
 Version: 0.2
+# What to update
 Replace: core
 Replace: update
+Replace: admin
+Replace: js
+Replace: install
 Replace: themes/cp_default
