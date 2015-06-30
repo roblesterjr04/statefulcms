@@ -72,6 +72,7 @@ class CP_Update {
 		unlink(__DIR__ . '/update_package.zip');
 		
 		root()->settings->set('running_sha', $update);
+		$this->version = $update;
 		return true;
 	}
 
