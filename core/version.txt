@@ -1,4 +1,3 @@
 Version: 0.1
-#Replace: themes/cp_default
-#Replace: core/controls.php
-Replace: update
+Replace: themes/cp_default
+Replace: core/controls.php
