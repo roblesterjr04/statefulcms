@@ -439,18 +439,43 @@ class Theme_Manager extends CP_Object {
 			$details = root()->themes->get_theme_details($theme);
 			if ($details) {
 				$themes[] = [
-					'Title' => $details->title,
-					'Description' => $details->description
+					'title' => $details->title,
+					'descr' => $details->description,
+					'slug' => $details->slug
 				];
 			}
 		}
 		return $themes;
 	}
 	
+	public function control_cell($row) {
+		$id = $row->slug;
+		$button = new CP_Button('theme_activate', 'Activate', ['class'=>'btn btn-default', 'activate-id'=>$id], $this);
+		return $button->control();
+	}
+	
+	public function theme_activate_click($sender) {
+		$activate_id = $sender->options['activate-id'];
+		root()->settings->set('cp_current_theme', $activate_id);
+		root()->iface->refresh();
+	}
+	
 	public function object_list($limit = null, $offset = null) {
 		$items = $this->theme_items();
-		//echo root()->components->table($items);
-		$table = new CP_Table('theme_list', $items, null, ['class'=>'table'], $this);
+		$columns = [
+			'title'=>[
+				'display'=>'Title'
+			],
+			'descr'=>[
+				'display'=>'Description'
+			],
+			'controls'=>[
+				'display'=>'Action',
+				'no_sort'=>true,
+				'callback'=>'control_cell'
+			]
+		];
+		$table = new CP_Table('theme_list', $items, $columns, ['class'=>'table'], $this);
 		$table->display();
 	}
 	
