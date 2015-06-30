@@ -347,6 +347,10 @@ class CP_FileUpload extends CP_Control {
 		
 	}
 	
+	public function markup() {
+		
+	}
+	
 }
 
 class CP_Radio extends CP_Control {
