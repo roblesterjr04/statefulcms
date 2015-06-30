@@ -83,9 +83,8 @@ class CP_Update {
 			$line_parts = explode(':', $line);
 			if (isset($line_parts[0]) && isset($line_parts[1])) {
 				if ($line_parts[0] == 'Replace') {
-					root()->iface->console($line);
 					$value = trim($line_parts[1]);
-					if (is_dir($value)) {
+					if (is_dir(__DIR__ . '/statefulcms-master/' . $value)) {
 						$this->replaceTree(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
 					} else {
 						rename(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
@@ -98,7 +97,7 @@ class CP_Update {
 				}
 				if ($line_parts[0] == 'Remove') {
 					$value = trim($line_parts[1]);
-					if (is_dir($value)) {
+					if (is_dir(__DIR__ . '/../' . $value)) {
 						$this->delTree(__DIR__ . '/../' . $value);
 					} else {
 						unlink(__DIR__ . '/../' . $value);
