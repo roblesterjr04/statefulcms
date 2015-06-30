@@ -35,6 +35,7 @@ class CP_Update {
 	private function delTree($dir) { 
 		$files = array_diff(scandir($dir), array('.','..')); 
 		foreach ($files as $file) { 
+			if ($file == 'version.txt') continue;
 			(is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file"); 
 		} 
 		return rmdir($dir); 
