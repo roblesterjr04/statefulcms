@@ -341,6 +341,10 @@ class CP_Checkbox extends CP_Control {
 	
 }
 
+class CP_FileUpload extends CP_Control {
+	
+}
+
 class CP_Radio extends CP_Control {
 	public function __construct($name, $group, $text, $options = [], $owner) {
 		$options['text'] = $text;
