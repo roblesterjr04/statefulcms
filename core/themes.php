@@ -14,8 +14,12 @@ class CP_Themes {
 		$this->current_theme = $ct;
 		$this->current_theme_dir = CP_WORKING_DIR . '/themes/' . $ct;
 		
-		include($this->current_theme_dir . '/functions.php');
 		
+		
+	}
+	
+	public function init_theme() {
+		include($this->current_theme_dir . '/functions.php');
 	}
 	
 	public function get_theme_dir() {

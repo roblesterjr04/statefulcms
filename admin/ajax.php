@@ -24,10 +24,14 @@ $object = root()->decode($object);
 
 $func = $_REQUEST['callback'] . '_' . $_REQUEST['event'];
 
+$sender = root()->decode($_REQUEST['sender']);
+
 // We can't change yet, we need to update the state with our changed value, and once the new state is saved. We can call the change callback.
 if ($_REQUEST['event'] == '_change' || $_REQUEST['event'] == '_keyup') {
 	if (get_class($sender) == 'CP_Editor') {
 		echo "var newval = CKEDITOR.instances.$callback.getData();";
+	} else if (get_class($sender) == 'CP_Checkbox') {
+		echo "var newval = $('*[name=\"$callback\"]').is(':checked') ? 'checked' : 'no';\n";
 	} else {
 		echo "var newval = $('*[name=\"$callback\"]').val();\n";
 	}

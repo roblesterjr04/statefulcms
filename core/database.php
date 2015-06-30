@@ -87,7 +87,6 @@ class DB {
 	public function update($table, $data, $where = false) {
 		$table = $this->prefix . $table;
 		$values = [];
-		unset($data['id']);
 		$where = $where ? 'where ' . $this->_parse_where($where) : '';
 		foreach ($data as $column=>$value) {
 			$values[] = "$column = '$value'";

@@ -16,13 +16,21 @@ class CP_Object {
 		if (isset($_GET['mod']) && $_GET['mod'] == $name) $this->active = true;
 	}
 	
+	/*public function __call($method, $args)
+	{
+		if (isset($this->$method)) {
+			$func = $this->$method;
+			return call_user_func_array($func, $args);
+		}
+	}*/
+	
 	public function title() {
 		return $this->_slug;
 	}
 	
 	public function admin() {
 		echo '<h2>' . $this->title();
-		echo '<a class="btn btn-primary" href="'.$this->edit_link(0).'">Add New</a></h2>';
+		echo '&nbsp;<a class="btn btn-primary" href="'.$this->edit_link(0).'">Add New</a></h2>';
 		$this->object_list();
 	}
 	
@@ -117,8 +125,7 @@ class CP_Object {
 	
 	public function update_control_state($control, $value) {
 		$this->controls->$control->val($value, false);
-		$encoded_object = base64_encode(serialize($this));
-		//echo "console.log('Updating State... $control: $value');\n";
+		$encoded_object = root()->encode($this);
 		echo "sessionState = '$encoded_object';\n";
 	}
 	
@@ -169,7 +176,7 @@ class CP_Objects {
 	protected $active;
 	
 	public function __construct() {
-		$this->init_global();
+		
 	}
 	
 	public function get_object($slug = false) {
@@ -239,6 +246,11 @@ class CP_Page extends CP_Object {
 	
 	public function finished_loading() {
 		//$this->controls->page_save->disable();
+	}
+	
+	public function page_view_click($sender) {
+		$id = $this->state->page_save_id;
+		root()->iface->navigate($this->view_link($id));
 	}
 	
 	/**
@@ -314,6 +326,9 @@ class CP_Page extends CP_Object {
 			$header = new CP_Label('header_label', $item->name, [], $this);
 			
 			$notices = new CP_NoticeArea('notice_area', [], $this);
+			
+			$view_button = new CP_Button('page_view', 'View', array('class'=>'btn btn-block btn-default'), $this);
+			
 			?>
 			<div class="row">
 				<div class="col-sm-9">
@@ -327,7 +342,8 @@ class CP_Page extends CP_Object {
 				<div class="col-sm-3">
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<? $button->display(); ?>
+							<? $button->display(); ?><br/>
+							<? $view_button->display(); ?>
 						</div>
 					</div>
 				</div>

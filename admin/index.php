@@ -3,7 +3,7 @@
 require_once '../cp-config.php';
 require_once '../core/init.php';
 	
-root()->authentication->secure();
+root()->authentication->secure(true);
 
 ?>
 <html>

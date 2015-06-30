@@ -65,11 +65,16 @@ class CP_Login {
 		}
 	}
 	
-	public function secure() {
+	public function secure($force = false) {
+		$require = root()->hooks->filter->apply('cp_require_login', CP_REQUIRE_LOGIN);
 		root()->hooks->action->perform('cp_login_secure');
-		if (CP_REQUIRE_LOGIN && !$this->isLoggedIn()) {
+		if (($require && !$this->isLoggedIn() && !$force) || ($force && !$this->isLoggedIn())) {
 			header("Location: /login.php");
 		}
+	}
+	
+	public function required() {
+		return root()->hooks->filter->apply('cp_require_login', CP_REQUIRE_LOGIN);
 	}
 	
 }

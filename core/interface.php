@@ -20,6 +20,12 @@ class CP_Interface {
 		return $script;
 	}
 	
+	public function navigate($to, $echo = true) {
+		$script = root()->hooks->filter->apply('iface_refresh', 'window.location.href = "'.$to.'";');
+		if ($echo) echo $script;
+		return $script;
+	}
+	
 	public function confirm($message, $name, $owner, $sender, $echo = true) {
 		$name = "confirm_$name";
 		$event = 'response';

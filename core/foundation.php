@@ -35,6 +35,9 @@ class CP_Foundation {
 		$this->authentication = new CP_Login();
 		$this->iface = new CP_Interface();
 		
+		$this->themes->init_theme();
+		$this->objects->init_global();
+		
 		$this->objects->add('CP_Page');
 		$this->objects->add('Theme_Manager');
 		$this->objects->add('CP_Users');

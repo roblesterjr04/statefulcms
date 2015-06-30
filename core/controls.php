@@ -38,10 +38,12 @@ class CP_Control {
 		$this->name = $name;
 		$this->owner = $owner;
 		$this->owner->add_control($this);
+		return $this;
 	}
 	
 	public function display() {
 		echo $this->control();
+		return $this;
 	}
 	
 	public function markup() {
@@ -147,7 +149,13 @@ class CP_Control {
 	}
 	
 	public function bind($event) {
-		$this->events[] = $event;
+		$this->events[$event] = $event;
+		return $this;
+	}
+	
+	public function unbind($event) {
+		unset($this->events[$event]);
+		return $this;
 	}
 	
 	public function fade_out($echo = true) {
@@ -162,9 +170,8 @@ class CP_TextField extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
 		if (!isset($options['type'])) $options['type'] = 'text';
-		parent::__construct($name, $options, $owner);
-		$this->bind('click');
-		$this->bind('keyup');
+		parent::__construct($name, $options, $owner)->bind('keyup')->bind('click');
+		return $this;
 	}
 }
 
@@ -173,8 +180,8 @@ class CP_Button extends CP_Control {
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
 		$options['type'] = 'submit';
-		parent::__construct($name, $options, $owner);
-		$this->bind('click');
+		parent::__construct($name, $options, $owner)->bind('click');
+		return $this;
 	}
 	
 }
@@ -184,6 +191,7 @@ class CP_Editor extends CP_Control {
 		$options['value'] = $text;
 		$options['id'] = $name;
 		parent::__construct($name, $options, $owner);
+		return $this;
 	}
 	
 	public function markup() {
@@ -212,8 +220,8 @@ class CP_TextArea extends CP_Control {
 	
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
-		parent::__construct($name, $options, $owner);
-		$this->bind('change');
+		parent::__construct($name, $options, $owner)->bind('change');
+		return $this;
 	}
 	
 	public function markup() {
@@ -231,6 +239,7 @@ class CP_Hidden extends CP_Control {
 		$options['value'] = $value;
 		$options['type'] = 'hidden';
 		parent::__construct($name, $options, $owner);
+		return $this;
 	}
 }
 
@@ -238,7 +247,8 @@ class CP_Label extends CP_Control {
 	public function __construct($name, $value, $options = [], $owner) {
 		$options['value'] = $value;
 		$options['name'] = $name;
-		parent::__construct($name, $options, $owner);
+		parent::__construct($name, $options, $owner)->bind('click');
+		return $this;
 	}
 	
 	public function markup() {
@@ -253,8 +263,8 @@ class CP_Timer extends CP_Control {
 
 	public function __construct($name, $interval, $options = [], $owner) {
 		$this->interval = $interval;
-		parent::__construct($name, $options, $owner);
-		$this->bind('tick');
+		parent::__construct($name, $options, $owner)->bind('tick');
+		return $this;
 	}
 	
 	public function markup() {
@@ -272,6 +282,7 @@ class CP_NoticeArea extends CP_Control {
 	public function __construct($name, $options = [], $owner) {
 		$options['data-notice'] = 'notice-area';
 		parent::__construct($name, $options, $owner);
+		return $this;
 	}
 	
 	public function markup() {
@@ -290,6 +301,124 @@ class CP_NoticeArea extends CP_Control {
 	
 	public function show_notice($notice) {
 		
+	}
+	
+}
+
+class CP_Checkbox extends CP_Control {
+	
+	public function __construct($name, $text, $options = [], $owner) {
+		$options['text'] = $text;
+		$options['type'] = 'checkbox';
+		$options['id'] = $name;
+		$options['name'] = $name;
+		parent::__construct($name, $options, $owner)->bind('change');
+		return $this;
+	}
+	
+	public function markup() {
+		$atts = $this->atts($this->options);
+		$text = $this->options['text'];
+		$output = "<label><input $atts/> $text</label>";
+		return $output;
+	}
+	
+	public function val($value, $echo = true) {
+		if ($value == 'checked') {
+			$this->options['checked'] = 'checked';
+			$script = '$(\'*[name="'.$this->name.'"]\').prop("checked", "checked");';
+		} else {
+			unset($this->options['checked']);
+			$script = '$(\'*[name="'.$this->name.'"]\').prop("checked", "");';
+		}
+		if ($echo) echo $script;
+		return $script;
+	}
+	
+	public function checked() {
+		return isset($this->options['checked']);
+	}
+	
+}
+
+class CP_Radio extends CP_Control {
+	public function __construct($name, $text, $options = [], $owner) {
+		$options['text'] = $text;
+		$options['type'] = 'radio';
+		$options['id'] = $name;
+		$options['name'] = $name;
+		parent::__construct($name, $options, $owner)->bind('change');
+		return $this;
+	}
+	
+	public function markup() {
+		$atts = $this->atts($this->options);
+		$text = $this->options['text'];
+		$output = "<label><input $atts/> $text</label>";
+		return $output;
+	}
+	
+	public function val($value, $echo = true) {
+		if ($value == 'checked') {
+			$this->options['checked'] = 'checked';
+			$script = '$(\'*[name="'.$this->name.'"]\').prop("checked", "checked");';
+		} else {
+			unset($this->options['checked']);
+			$script = '$(\'*[name="'.$this->name.'"]\').prop("checked", "");';
+		}
+		if ($echo) echo $script;
+		return $script;
+	}
+	
+	public function checked() {
+		return isset($this->options['checked']);
+	}
+}
+
+class CP_Select extends CP_Control {
+	
+	public $items = [];
+	public $selected;
+	
+	public function __construct($name, $items, $selected = false, $options = [], $owner) {
+		$options['name'] = $name;
+		$options['id'] = $name;
+		$this->items = $items;
+		$this->selected = $selected;
+		parent::__construct($name, $options, $owner)->bind('change');
+		return $this;
+	}
+	
+	public function markup() {
+		$atts = $this->atts($this->options);
+		$control = "<select $atts>";
+		foreach ($this->items as $item) {
+			if ($item->id == $this->selected) $item->selected = true;
+			$control .= $item->output();
+		}
+		$control .= "</select>";
+		return $control;
+	}
+	
+}
+
+class CP_Select_Option {
+	
+	public $value;
+	public $id;
+	public $selected = false;
+	
+	public function __construct($value, $id = false) {
+		$this->value = $value;
+		$this->id = $id ?: $value;
+		return $this;
+	}
+	
+	public function output() {
+		$id = $this->id;
+		$value = $this->value;
+		$selected = $this->selected ? 'selected' : '';
+		return "<option value=\"$id\" $selected>$value</option>";
 	}
 	
 }
@@ -313,6 +442,7 @@ class CP_Table extends CP_Control {
 		$this->table_keys = $keys;
 		parent::__construct($name, $options, $owner);
 		root()->hooks->action->perform('new_cp_table', $this);
+		return $this;
 	}
 	
 	public function delete_row($rowid) {
