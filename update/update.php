@@ -82,6 +82,7 @@ class CP_Update {
 		foreach ($data_lines as $line) {
 			$line_parts = explode(':', $line);
 			if (isset($line_parts[0]) && isset($line_parts[1])) {
+				root()->iface->console($line);
 				if ($line_parts[0] == 'Replace') {
 					$value = trim($line_parts[1]);
 					if (is_dir($value)) {
