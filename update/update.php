@@ -74,7 +74,7 @@ class CP_Update {
 			zip_close($zip);
 		}
 		
-		$data = file_get_contents(__DIR__ . '/statefulcms-master/core/version.txt');
+		$data = file_get_contents(__DIR__ . '/statefulcms-master/update/version.txt');
 		
 		$data_lines = explode("\n", $data);
 		
