@@ -1,4 +1,3 @@
 Version: 0.2
 Replace: core
-Replace: update
 Remove: update/index.php
