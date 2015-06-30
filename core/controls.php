@@ -343,6 +343,10 @@ class CP_Checkbox extends CP_Control {
 
 class CP_FileUpload extends CP_Control {
 	
+	public function __construct() {
+		
+	}
+	
 }
 
 class CP_Radio extends CP_Control {
