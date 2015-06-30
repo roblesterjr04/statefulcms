@@ -23,8 +23,9 @@ class CP_Control {
 	public $events = [];
 	public $disabled = false;
 	
-	protected function atts($options) {
+	protected function atts($options = false) {
 		$atts = [];
+		if (!$options) $options = $this->options;
 		foreach ($options as $option=>$v) {
 			$atts[] = "$option=\"$v\"";
 		}
@@ -49,7 +50,7 @@ class CP_Control {
 	public function markup() {
 		if (!isset($this->options['id'])) $this->options['id'] = $this->name;
 		if ($this->disabled) $this->options['disabled'] = 'disabled';
-		$atts = $this->atts($this->options);
+		$atts = $this->atts();
 		$output = "<input name=\"{$this->name}\" $atts/>";
 		return root()->hooks->filter->apply('cp_fields_control', $output);
 	}
@@ -344,11 +345,16 @@ class CP_Checkbox extends CP_Control {
 class CP_FileUpload extends CP_Control {
 	
 	public function __construct($name, $text, $value, $options = [], $owner) {
+		$options['type'] = 'file';
+		$options['name'] = $name;
+		$options['id'] = $name;
 		parent::__construct($name, $options, $owner);
 	}
 	
 	public function markup() {
-		
+		$atts = $this->atts();
+		$output = "<input $atts />";
+		return $output;
 	}
 	
 	
