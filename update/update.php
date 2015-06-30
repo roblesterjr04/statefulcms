@@ -40,6 +40,14 @@ class CP_Update {
 		return rmdir($dir); 
 	}
 	
+	private function replaceTree($dir, $new) {
+		$files = array_diff(scandir($dir), array('.','..')); 
+		foreach ($files as $file) { 
+			(is_dir("$dir/$file")) ? $this->replaceTree("$dir/$file") : rename("$dir/$file", "$new/$file"); 
+		} 
+		//return rmdir($dir);
+	}
+	
 	public function update_core($update) {
 		$package = file_get_contents('https://github.com/roblesterjr04/statefulcms/archive/master.zip');
 		file_put_contents(__DIR__ . '/update_package.zip', $package);
@@ -66,7 +74,7 @@ class CP_Update {
 			zip_close($zip);
 		}
 		
-		rename(__DIR__ . '/statefulcms-master/core', __DIR__ . '/../core');
+		$this->replaceTree(__DIR__ . '/statefulcms-master/core', __DIR__ . '/../core');
 		
 		$this->delTree(__DIR__ . '/statefulcms-master');
 		unlink(__DIR__ . '/update_package.zip');
