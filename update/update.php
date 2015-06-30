@@ -32,9 +32,10 @@ class CP_Update {
 		
 	}
 	
-	public function update_core() {
+	public function update_core($update) {
 		$package = file_get_contents('https://github.com/roblesterjr04/statefulcms/archive/master.zip');
-		
+		root()->settings->set('running_sha', $update);
+		return true;
 	}
 
 }
@@ -49,11 +50,22 @@ class Update_Control extends CP_Object {
 		return 'Updates';
 	}
 	
+	public function update_button_click($sender) {
+		$updating = root()->update->update_core($this->state->update_version);
+		$this->controls->update_label->val('Done.');
+	}
+	
 	public function admin() {
 		$update = root()->update->has_update();
+		
 		if ($update) {
+			$this->state->update_version = $update;
+			$button = new CP_Button('update_button', 'Update Now', ['class'=>'btn btn-success'], $this);
+			$label = new CP_Label('update_label', '', [], $this);
 			?>
 				<p>There is an update available</p>
+				<? $button->display() ?>
+				<? $label->display() ?>
 			<?
 		} else {
 			?>
