@@ -1,4 +1,4 @@
-Version: 0.1
+Version: 0.2
 Replace: core
 Replace: update
-Setting: test=test value
+Remove: update/index.php
