@@ -1,5 +1,3 @@
 Version: 0.1
-Replace: core
-Replace: js
-Replace: update
-Replace: admin
+Replace: themes/default_theme
+Replace: core/controls.php
