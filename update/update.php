@@ -93,6 +93,13 @@ class CP_Update {
 					$setting = explode('=', $value);
 					root()->settings->set($setting[0], $setting[1]);
 				}
+				if ($line_parts[0] == 'Remove') {
+					if (is_dir(trim($line_parts[1]))) {
+						$this->delTree(trim($line_parts[1]));
+					} else {
+						unlink(trim($line_parts[1]));
+					}
+				}
 			}
 		}
 		
