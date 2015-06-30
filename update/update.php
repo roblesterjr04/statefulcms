@@ -74,7 +74,23 @@ class CP_Update {
 			zip_close($zip);
 		}
 		
-		$this->replaceTree(__DIR__ . '/statefulcms-master/core', __DIR__ . '/../core');
+		$data = file_get_contents(__DIR__ . '/statefulcms-master/core/version.txt');
+		
+		$data_lines = explode("\n", $data);
+		
+		foreach ($data_lines as $line) {
+			$line_parts = explode(':', $line);
+			if (isset($line_parts[0]) && isset($line_parts[1])) {
+				if ($line_parts[0] == 'Replace') {
+					$this->replaceTree(__DIR__ . '/statefulcms-master/' . trim($line_parts[1]), __DIR__ . '/../' . trim($line_parts[1]));
+				}
+				if ($line_parts[0] == 'Setting') {
+					$value = trim($line_parts[1]);
+					$setting = explode('=', $value);
+					root()->settings->set($setting[0], $setting[1]);
+				}
+			}
+		}
 		
 		$this->delTree(__DIR__ . '/statefulcms-master');
 		unlink(__DIR__ . '/update_package.zip');

@@ -1,1 +1,5 @@
 Version: 0.1
+Replace: core
+Replace: js
+Replace: update
+Replace: admin
