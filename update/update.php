@@ -35,7 +35,6 @@ class CP_Update {
 	private function delTree($dir) { 
 		$files = array_diff(scandir($dir), array('.','..')); 
 		foreach ($files as $file) { 
-			if ($file == 'version.txt') continue;
 			(is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file"); 
 		} 
 		return rmdir($dir); 
@@ -44,7 +43,9 @@ class CP_Update {
 	private function replaceTree($dir, $new) {
 		$files = array_diff(scandir($dir), array('.','..')); 
 		foreach ($files as $file) { 
-			(is_dir("$dir/$file")) ? $this->replaceTree("$dir/$file") : rename("$dir/$file", "$new/$file"); 
+			if ($file != 'version.txt') {
+				(is_dir("$dir/$file")) ? $this->replaceTree("$dir/$file") : rename("$dir/$file", "$new/$file"); 
+			}
 		} 
 	}
 	
