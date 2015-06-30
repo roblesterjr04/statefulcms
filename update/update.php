@@ -82,7 +82,11 @@ class CP_Update {
 			$line_parts = explode(':', $line);
 			if (isset($line_parts[0]) && isset($line_parts[1])) {
 				if ($line_parts[0] == 'Replace') {
-					$this->replaceTree(__DIR__ . '/statefulcms-master/' . trim($line_parts[1]), __DIR__ . '/../' . trim($line_parts[1]));
+					if (is_dir(trim($line_parts[1]))) {
+						$this->replaceTree(__DIR__ . '/statefulcms-master/' . trim($line_parts[1]), __DIR__ . '/../' . trim($line_parts[1]));
+					} else {
+						rename(__DIR__ . '/statefulcms-master/' . trim($line_parts[1]), __DIR__ . '/../' . trim($line_parts[1]));
+					}
 				}
 				if ($line_parts[0] == 'Setting') {
 					$value = trim($line_parts[1]);
