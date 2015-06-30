@@ -125,13 +125,13 @@ class Update_Control extends CP_Object {
 			$button = new CP_Button('update_button', 'Update Now', ['class'=>'btn btn-success'], $this);
 			$label = new CP_Label('update_label', '', [], $this);
 			?>
-				<p>There is an update available</p>
+				<p>There is an update available: <?= $update ?></p>
 				<? $button->display() ?>
 				<? $label->display() ?>
 			<?
 		} else {
 			?>
-				<p>You are using the latest version.</p>
+				<p>You are using the latest version: <?= root()->settings->get('running_sha') ?></p>
 			<?
 		}
 	}
