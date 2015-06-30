@@ -53,7 +53,7 @@ class CP_Interface {
 	}
 	
 	public function console($message, $echo = true) {
-		$script = root()->hooks->filter->apply('iface_console', 'if (console) console.log("'.$message.'");');
+		$script = root()->hooks->filter->apply('iface_console', 'if (console) console.log("'.$message.'");' . "\n");
 		if ($echo) echo $script;
 		return $script;
 	}
