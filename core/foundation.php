@@ -43,6 +43,7 @@ class CP_Foundation {
 		$this->objects->add('CP_Page');
 		$this->objects->add('Theme_Manager');
 		$this->objects->add('CP_Users');
+		$this->objects->add('Update_Control');
 		
 		$this->hooks->action->perform('init', $this);
 		

@@ -34,6 +34,32 @@ class CP_Update {
 	
 	public function update_core() {
 		$package = file_get_contents('https://github.com/roblesterjr04/statefulcms/archive/master.zip');
+		
 	}
 
+}
+
+class Update_Control extends CP_Object {
+	
+	public function __construct() {
+		parent::__construct('Update_Control');
+	}
+	
+	public function title() {
+		return 'Updates';
+	}
+	
+	public function admin() {
+		$update = root()->update->has_update();
+		if ($update) {
+			?>
+				<p>There is an update available</p>
+			<?
+		} else {
+			?>
+				<p>You are using the latest version.</p>
+			<?
+		}
+	}
+	
 }
