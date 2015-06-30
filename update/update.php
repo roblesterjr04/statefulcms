@@ -131,9 +131,12 @@ class Update_Control extends CP_Object {
 			<?
 		} else {
 			?>
-				<p>You are using the latest version: <?= root()->settings->get('running_sha') ?></p>
+				<p>This is the latest version.</p>
 			<?
 		}
+		?>
+			<p>You are running version: <?= root()->settings->get('running_sha') ?></p>
+		<?
 	}
 	
 }
