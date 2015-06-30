@@ -343,7 +343,7 @@ class CP_Checkbox extends CP_Control {
 
 class CP_FileUpload extends CP_Control {
 	
-	public function __construct() {
+	public function __construct($name, $text, $value, $options = [], $owner) {
 		
 	}
 	
