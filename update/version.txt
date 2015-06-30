@@ -1,2 +1,4 @@
 Version: 0.1
 Replace: core
+Replace: update
+Setting: test=test value

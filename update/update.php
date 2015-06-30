@@ -43,9 +43,7 @@ class CP_Update {
 	private function replaceTree($dir, $new) {
 		$files = array_diff(scandir($dir), array('.','..')); 
 		foreach ($files as $file) { 
-			if ($file != 'version.txt') {
-				(is_dir("$dir/$file")) ? $this->replaceTree("$dir/$file") : rename("$dir/$file", "$new/$file"); 
-			}
+			(is_dir("$dir/$file")) ? $this->replaceTree("$dir/$file") : rename("$dir/$file", "$new/$file"); 
 		} 
 	}
 	
