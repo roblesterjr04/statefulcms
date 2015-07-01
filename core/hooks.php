@@ -31,7 +31,7 @@ class CP_Hooks {
 		$cp_hooks = $this->stack;
 		$hook = $params[0];
 		$params = array_slice($params, 1);
-		if (array_key_exists($hook, $cp_hooks[$type])) {
+		if (isset($cp_hooks[$type]) && array_key_exists($hook, $cp_hooks[$type])) {
 			$hooks = $cp_hooks[$type][$hook];
 			foreach ($hooks as $run) {
 				$callback = $run['callback'];
