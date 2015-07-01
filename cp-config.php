@@ -14,3 +14,5 @@ define('DB_PORT', '8889');
 define('CP_WORKING_DIR', __DIR__ );
 
 define('CP_REQUIRE_LOGIN', true);
+
+error_reporting(E_ERROR | E_PARSE);

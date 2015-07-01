@@ -5,6 +5,7 @@ class CP_Object {
 	
 	protected $_slug;
 	public $controls;
+	public $state;
 	
 	public $is_public = true;
 	
@@ -13,6 +14,7 @@ class CP_Object {
 	
 	public function __construct($name) {
 		$this->controls = new StdClass();
+		$this->state = new StdClass();
 		$this->_slug = $name;
 		if (isset($_GET['mod']) && $_GET['mod'] == $name) $this->active = true;
 	}
