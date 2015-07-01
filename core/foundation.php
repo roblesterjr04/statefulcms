@@ -28,13 +28,13 @@ class CP_Foundation {
 	
 	public function init() {
 		$this->core = new CP_Core();
-		if ($this->type != 'install') $this->db = new DB();
+		$this->db = new DB();
 		$this->hooks = new CP_Hooks();
-		if ($this->type != 'install') $this->settings = new CP_Settings();
-		$this->themes = new CP_Themes();
-		if ($this->type != 'install') $this->objects = new CP_Objects();
+		$this->settings = new CP_Settings();
+		if ($this->type != 'install') $this->themes = new CP_Themes();
+		$this->objects = new CP_Objects();
 		if ($this->type != 'install') $this->components = new CP_Components();
-		if ($this->type != 'install') $this->authentication = new CP_Login();
+		$this->authentication = new CP_Login();
 		if ($this->type != 'install') $this->iface = new CP_Interface();
 		if ($this->type != 'install') $this->update = new CP_Update();
 		
@@ -47,7 +47,7 @@ class CP_Foundation {
 		if ($this->type != 'install') $this->objects->add('Update_Control');
 		
 		if ($this->type != 'install') $this->hooks->action->perform('init', $this);
-		
+		return $this;
 	}
 	
 	public function decode($object) {

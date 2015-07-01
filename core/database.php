@@ -56,8 +56,12 @@ class DB {
 		$offset = $offset ? "OFFSET $offset" : "";
 		$statement = "SELECT * FROM $from where $where $limit $offset";
 		$result = $this->mySql->query($statement);
-		$this->result = $result;
-		return new DB_Resultset($result);
+		if ($result) {
+			$this->result = $result;
+			return new DB_Resultset($result);
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -74,14 +78,24 @@ class DB {
 		$columns = [];
 		foreach ($data as $column=>$value) {
 			$values[] = "'$value'";
-			$columns[] = $column;
+			$columns[] = "`$column`";
 		}
 		$data_string = implode(',', $values);
 		$column_string = implode(',', $columns);
-		$statement = "insert into $table ($column_string) values($data_string)";
+		$statement = "insert into `$table` ($column_string) values($data_string);";
 		$result = $this->mySql->query($statement) === true;
 		if ($result) $result = $this->mySql->insert_id;
 		return $result;
+	}
+	
+	public function close() {
+		$this->mySql->close();
+		return $this;
+	}
+	
+	public function open() {
+		$this->init();
+		return $this;
 	}
 	
 	public function update($table, $data, $where = false) {
@@ -127,7 +141,6 @@ class DB_Resultset {
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$this->rows[] = new DB_Row($row);
 		}
-		$this->num_rows = $result->num_rows;
 	}
 }
 
