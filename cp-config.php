@@ -15,4 +15,4 @@ define('CP_WORKING_DIR', __DIR__ );
 
 define('CP_REQUIRE_LOGIN', true);
 
-error_reporting(E_ERROR | E_PARSE);
+error_reporting(0);
