@@ -49,7 +49,7 @@ class CP_Themes {
 	}
 	
 	public function get_theme_url() {
-		return 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . '/themes/' . $this->current_theme;
+		return root()->settings->get('cp_site_url').'/themes/' . $this->current_theme;
 	}
 	
 	public function get_theme_details($slug = false) {
@@ -90,7 +90,7 @@ class CP_Components {
 	
 	public function state_script() {
 		echo '<script type="text/javascript">var ajax_host = "'.root()->settings->get('cp_site_url').'/admin/ajax.php";</script>';
-		echo '<script type="text/javascript" src="/js/state.js"></script>';
+		echo '<script type="text/javascript" src="'.root()->settings->get('cp_site_url').'/js/state.js"></script>';
 	}
 	
 	public function jquery() {
