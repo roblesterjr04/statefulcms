@@ -140,6 +140,7 @@ class DB_Resultset {
 		$this->raw = $result;
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$this->rows[] = new DB_Row($row);
+			$this->num_rows = count($this->rows);
 		}
 	}
 }
