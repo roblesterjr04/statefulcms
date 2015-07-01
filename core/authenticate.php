@@ -123,7 +123,7 @@ class CP_Users extends CP_Object {
 	public function get_objects($limit = null, $offset = null) {
 		$items = root()->db->get('users', $limit, $offset);
 		$objects = [];
-		if ($items->rows) {
+		if (count($items->rows)) {
 			foreach ($items->rows as $row) {
 				$meta = root()->db->get_where('objectmeta', ['meta_item'=>$row->id, 'meta_object'=>$this->_slug])->rows;
 				if ($meta) {
