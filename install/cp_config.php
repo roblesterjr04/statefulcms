@@ -14,5 +14,3 @@ define('DB_PORT', '%%db_port%%');
 define('CP_WORKING_DIR', __DIR__ );
 
 define('CP_REQUIRE_LOGIN', true);
-
-error_reporting(E_ALL ^ E_WARNING);
