@@ -15,4 +15,4 @@ define('CP_WORKING_DIR', __DIR__ );
 
 define('CP_REQUIRE_LOGIN', true);
 
-ini_set('display_errors', '0');
+error_reporting(E_ALL ^ E_WARNING);
