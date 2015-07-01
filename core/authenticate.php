@@ -126,8 +126,8 @@ class CP_Users extends CP_Object {
 		if (count($items->rows)) {
 			foreach ($items->rows as $row) {
 				$meta = root()->db->get_where('objectmeta', ['meta_item'=>$row->id, 'meta_object'=>$this->_slug])->rows;
-				if ($meta) {
-					$meta_array = [];
+				$meta_array = [];
+				if (count($meta)) {
 					foreach ($meta as $meta_row) {
 						$row->{$meta_row->meta_name}=$meta_row->meta_value;
 						$row->columns[] = $meta_row->meta_name;
