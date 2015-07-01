@@ -12,6 +12,7 @@ class CP_Object {
 	public $object_meta_table = 'objectmeta';
 	
 	public function __construct($name) {
+		$this->controls = new StdClass();
 		$this->_slug = $name;
 		if (isset($_GET['mod']) && $_GET['mod'] == $name) $this->active = true;
 	}
