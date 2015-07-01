@@ -121,7 +121,7 @@ class CP_Users extends CP_Object {
 	}
 	
 	public function get_objects($limit = null, $offset = null) {
-		$items = root()->db->get('users', $limit, $offset);
+		$items = root()->db->get_where('users', '1=1', $limit, $offset);
 		$objects = [];
 		if (count($items->rows)) {
 			foreach ($items->rows as $row) {
