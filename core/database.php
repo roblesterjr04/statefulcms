@@ -6,9 +6,22 @@ class DB {
 	public $mySql;
 	protected $result;
 	public $prefix;
+	private $statement;
+	private $from;
+	private $command;
+	private $where;
+	private $func;
 	
 	public function __construct() {
 		$this->init();
+	}
+	
+	public function clear() {
+		$this->from = '';
+		$this->statement = '';
+		$this->where = '';
+		$this->command = '';
+		$this->func = '';
 	}
 	
 	private function init() {
@@ -31,6 +44,8 @@ class DB {
 		$this->result = $this->mySql->query($statement);
 		return new DB_Resultset($this->result);
 	}
+	
+	
 	
 	/**
 	 * get_where function.
@@ -98,6 +113,32 @@ class DB {
 		return $this;
 	}
 	
+	public function run() {
+		$statement = $this->command . $this->where;
+		$this->clear();
+		return $this->mySql->query($statement);
+	}
+	
+	public function from($table) {
+		$table = $this->prefix . $table;
+		$this->from = $table;
+		if ($this->func == 'select') $this->command .= $table;
+		if (!$this->func) $this->command = "select * from $table";
+		return $this;
+	}
+	
+	public function select($data) {
+		$select = $this->_parse_select($data);
+		$this->command = "select $select from ";
+		$this->func == 'select';
+		return $this;
+	}
+	
+	public function where($where) {
+		$this->where = $this->_parse_where($where);
+		return $this;
+	}
+	
 	public function update($table, $data, $where = false) {
 		$table = $this->prefix . $table;
 		$values = [];
@@ -126,6 +167,11 @@ class DB {
 			$output[] = "$key = $value";
 		}
 		return implode(' AND ', $output);
+	}
+	
+	private function _parse_select($select) {
+		if (is_string($select)) return $select;
+		return implode(',', $select);
 	}
 	
 }
