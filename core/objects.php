@@ -108,7 +108,7 @@ class CP_Object {
 	
 	public function get_item($id) {
 		$item = root()->db->get_where($this->object_table, ['id'=>$id], 1);
-		if ($item) {
+		if (count($item->rows)) {
 			$row = $item->rows[0];
 			$meta = root()->db->get_where($this->object_meta_table, ['meta_item'=>$row->id, 'meta_object'=>$this->_slug])->rows;
 			if ($meta) {

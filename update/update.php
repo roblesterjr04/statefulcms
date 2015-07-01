@@ -122,7 +122,7 @@ class Update_Control extends CP_Object {
 	
 	public function title() {
 		$count = 0;
-		if (root()->update->has_update()) $count++;
+		//if (root()->update->has_update()) $count++;
 		return 'Updates <span class="badge">'.($count ?: '').'</span>';
 	}
 	

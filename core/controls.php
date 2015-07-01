@@ -73,7 +73,7 @@ class CP_Control {
 		return $output;
 	}
 	
-	public function val($text, $echo = true) {
+	public function val($text = false, $echo = true) {
 		if ($text) {
 			$this->options['value'] = $text;
 			$method = 'val';

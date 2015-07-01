@@ -11,10 +11,12 @@ require_once '../core/init.php';
 
 //$params = unserialize($_REQUEST['params']);
 
-$object = $_REQUEST['object'];
+$object = isset($_REQUEST['object']) ? $_REQUEST['object'] : false;
 $data = isset($_REQUEST['data']) ? $_REQUEST['data'] : false;
 
-$callback = $_REQUEST['callback'];
+$callback = isset($_REQUEST['callback']) ? $_REQUEST['callback'] : false;
+
+$event = isset($_REQUEST['event']) ? $_REQUEST['event'] : false;
 
 echo "sessionState = '$object';\n";
 
@@ -22,12 +24,14 @@ echo "if (console) console.log('*');\n";
 
 $object = root()->decode($object);
 
-$func = $_REQUEST['callback'] . '_' . $_REQUEST['event'];
+$func = $callback . '_' . $event;
 
-$sender = root()->decode($_REQUEST['sender']);
+$sender_in = isset($_REQUEST['sender']) ? $_REQUEST['sender'] : false;
+
+$sender = root()->decode($sender_in);
 
 // We can't change yet, we need to update the state with our changed value, and once the new state is saved. We can call the change callback.
-if ($_REQUEST['event'] == '_change' || $_REQUEST['event'] == '_keyup') {
+if ($event == '_change' || $event == '_keyup') {
 	if (get_class($sender) == 'CP_Editor') {
 		echo "var newval = CKEDITOR.instances.$callback.getData();";
 	} else if (get_class($sender) == 'CP_Checkbox') {
@@ -35,19 +39,18 @@ if ($_REQUEST['event'] == '_change' || $_REQUEST['event'] == '_keyup') {
 	} else {
 		echo "var newval = $('*[name=\"$callback\"]').val();\n";
 	}
-	$sender = $_REQUEST['sender'];
 	//echo "console.log('Executing state update: '+newval);\n";
-	echo "cp_ajax('$callback', sessionState, '$sender', 'update_state', newval, true, '".substr($_REQUEST['event'],1)."');\n\n";
+	echo "cp_ajax('$callback', sessionState, '$sender_in', 'update_state', newval, true, '".substr($event,1)."');\n\n";
 }
 
 // We are being asked to update the state. 
-else if ($_REQUEST['event'] == 'update_state') {
-	$object->update_control_state($_REQUEST['callback'], $data);
+else if ($event == 'update_state') {
+	$object->update_control_state($callback, $data);
 }
 
 else {
 
-	$sender = root()->decode($_REQUEST['sender']);
+	$sender = root()->decode($sender_in);
 
 	if (method_exists($object, $func)) {
 		echo "/* $func exists in owner. */\n\n";
