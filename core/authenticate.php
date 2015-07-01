@@ -69,7 +69,8 @@ class CP_Login {
 		$require = root()->hooks->filter->apply('cp_require_login', CP_REQUIRE_LOGIN);
 		root()->hooks->action->perform('cp_login_secure');
 		if (($require && !$this->isLoggedIn() && !$force) || ($force && !$this->isLoggedIn())) {
-			header("Location: /login.php");
+			$url = root()->settings->get('cp_site_url');
+			header("Location: $url/login.php");
 		}
 	}
 	
