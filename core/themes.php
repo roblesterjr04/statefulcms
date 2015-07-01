@@ -3,7 +3,7 @@
 class CP_Themes {
 	
 	protected $current_theme_dir;
-	protected $current_theme;
+	public $current_theme;
 	
 	public function __construct() {
 		

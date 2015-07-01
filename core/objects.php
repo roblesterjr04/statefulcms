@@ -452,6 +452,8 @@ class Theme_Manager extends CP_Object {
 	public function control_cell($row) {
 		$id = $row->slug;
 		$button = new CP_Button('theme_activate', 'Activate', ['class'=>'btn btn-default', 'id'=>'activate_theme_'.$id, 'activate-id'=>$id], $this);
+		$current = root()->themes->current_theme;
+		if ($current == $id) $button->disabled = true;
 		return $button->control();
 	}
 	
