@@ -144,7 +144,7 @@ class Update_Control extends CP_Object {
 		root()->iface->refresh();
 	}
 	
-	public function admin() {
+	public function ajax_update_check() {
 		$update = root()->update->check_for_update();
 		
 		if ($update) {
@@ -164,6 +164,18 @@ class Update_Control extends CP_Object {
 		?>
 			<p>You are running version: <?= root()->settings->get('running_sha') ?></p>
 		<?
+	}
+	
+	public function check_again_click($sender) {
+		$this->controls->ajax_update->update();
+	}
+	
+	public function admin() {
+		$button = new CP_Button('check_again', 'Check Again...', ['class'=>'btn btn-default'], $this);
+		$button->display();
+		echo "<br/><br/>";
+		$display = new CP_Ajax('ajax_update', 'ajax_update_check', [], $this);
+		$display->display()->update();
 	}
 	
 }

@@ -15,6 +15,7 @@ root()->authentication->secure(true);
 		<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="//cdn.ckeditor.com/4.4.7/standard/ckeditor.js"></script>
 		<script type="text/javascript" src="<?= root()->settings->get('cp_site_url') ?>/js/state.js"></script>
+		<script type="text/javascript">var state_host = "<?= root()->settings->get('cp_site_url') ?>/admin/state.php";</script>
 		<script type="text/javascript">var ajax_host = "<?= root()->settings->get('cp_site_url') ?>/admin/ajax.php";</script>
 	</head>
 	<body style="padding-top: 70px;">

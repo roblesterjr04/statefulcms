@@ -89,6 +89,7 @@ class CP_Components {
 	}
 	
 	public function state_script() {
+		echo '<script type="text/javascript">var state_host = "'.root()->settings->get('cp_site_url').'/admin/state.php";</script>';
 		echo '<script type="text/javascript">var ajax_host = "'.root()->settings->get('cp_site_url').'/admin/ajax.php";</script>';
 		echo '<script type="text/javascript" src="'.root()->settings->get('cp_site_url').'/js/state.js"></script>';
 	}

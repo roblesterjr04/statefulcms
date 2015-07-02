@@ -137,7 +137,7 @@ class CP_Control {
 	protected function event_handler($event) {
 		$name = $this->name;
 		$sender = base64_encode(serialize($this));
-		return "cp_ajax('$name',sessionState,'$sender','$event'); return false;";
+		return "cp_state('$name',sessionState,'$sender','$event'); return false;";
 	}
 	
 	protected function set_session_state() {
@@ -270,8 +270,43 @@ class CP_Timer extends CP_Control {
 	
 	public function markup() {
 		$sender = base64_encode(serialize($this));
-		$output = "<script type=\"text/javascript\" name=\"{$this->name}\">var int_{$this->name} = setInterval(function() { cp_ajax('{$this->name}', sessionState,'$sender', 'tick'); }, {$this->interval});</script>$sessionstate";
+		$output = "<script type=\"text/javascript\" name=\"{$this->name}\">var int_{$this->name} = setInterval(function() { cp_state('{$this->name}', sessionState,'$sender', 'tick'); }, {$this->interval});</script>$sessionstate";
 		return $output;
+	}
+	
+}
+
+class CP_Ajax extends CP_Control {
+	
+	public $image;
+	
+	public function __construct($name, $callback, $options = [], $owner) {
+		$options['name'] = $name;
+		$options['id'] = $name;
+		$options['callback'] = $callback;
+		$image = root()->settings->get('cp_site_url') . '/admin/images/ajax-loader.gif';
+		$this->image = "<img src=\"$image\" />";
+		parent::__construct($name, $options, $owner)->bind('update');
+	}
+	
+	public function markup() {
+		$atts = $this->atts();
+		$output = "<div $atts>{$this->image}</div>";
+		return $output;
+	}
+	
+	public function update($callback = false) {
+		
+		if (!$callback) $callback = $this->options['callback'];
+		
+		global $state_return;
+		
+		$script = "$('div[name=\"{$this->name}\"]').trigger('update').html('{$this->image}'); cp_ajax('{$this->name}', sessionState, '$callback');";
+		
+		if (!$state_return) $script = "<script>$script</script>";
+		
+		echo $script;
+		
 	}
 	
 }
