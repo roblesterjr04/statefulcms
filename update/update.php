@@ -144,7 +144,7 @@ class Update_Control extends CP_Object {
 	
 	public function ajax_update_core() {
 		root()->update->update_core($this->state->update_version);
-		echo "<p>Update Complete.</p>";
+		echo "<h3>Update Complete.</h3>";
 		$this->ajax_update_check();
 	}
 	
