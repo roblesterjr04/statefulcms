@@ -56,6 +56,7 @@ class default_theme extends CP_Object {
 		$test_radio_1 = new CP_Radio('test_radio_1', 'test_radio_group', 'My Radio 1', ['checked'=>'checked'], $this);
 		$test_radio_2 = new CP_Radio('test_radio_2', 'test_radio_group', 'My Radio 2', [], $this);
 		$file = new CP_FileUpload('file', 'Upload a file here', '', [], $this);
+		$image = new CP_Image('my_image', 'http://cdn1.sciencefiction.com/wp-content/uploads/2013/09/Stargate.jpg', ['style'=>'max-width: 100%'], $this);
 		?>
 			<div class="row">
 				<div class="col-sm-6">
@@ -66,9 +67,10 @@ class default_theme extends CP_Object {
 					<? $test_radio_1->display() ?>
 					<? $test_radio_2->display() ?>
 					<br/>
-					<? $file->display() ?>
+					<? $image->display() ?>
 				</div>
 			</div>
+			
 		<?
 	}
 	

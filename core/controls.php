@@ -276,6 +276,25 @@ class CP_Timer extends CP_Control {
 	
 }
 
+class CP_Image extends CP_Control {
+	
+	public function __construct($name, $image, $options = [], $owner) {
+		$options['src'] = $image;
+		$options['name'] = $name;
+		$options['id'] = $name;
+		parent::__construct($name, $options, $owner);
+		$this->bind('click');
+		return $this;
+	}
+	
+	public function markup() {
+		$atts = $this->atts();
+		$output = "<img $atts />";
+		return $output;
+	}
+	
+}
+
 class CP_Ajax extends CP_Control {
 	
 	public $image;
