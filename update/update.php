@@ -139,9 +139,12 @@ class Update_Control extends CP_Object {
 	}
 	
 	public function update_button_click($sender) {
-		$updating = root()->update->update_core($this->state->update_version);
-		$this->controls->update_label->val('Done.');
-		root()->iface->refresh();
+		$this->controls->ajax_update->update('ajax_update_core');
+	}
+	
+	public function ajax_update_core() {
+		root()->update->update_core($this->state->update_version);
+		$this->ajax_update_check();
 	}
 	
 	public function ajax_update_check() {
@@ -150,11 +153,9 @@ class Update_Control extends CP_Object {
 		if ($update) {
 			$this->state->update_version = $update;
 			$button = new CP_Button('update_button', 'Update Now', ['class'=>'btn btn-success'], $this);
-			$label = new CP_Label('update_label', '', [], $this);
 			?>
 				<p>There is an update available: <?= $update ?></p>
 				<? $button->display() ?>
-				<? $label->display() ?>
 			<?
 		} else {
 			?>
