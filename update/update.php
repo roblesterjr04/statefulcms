@@ -34,7 +34,9 @@ class CP_Update {
 	
 	public function check_for_update() {
 		
-		$data = file_get_contents('https://raw.githubusercontent.com/roblesterjr04/statefulcms/master/update/version.txt');
+		$git = GIT_BRANCH;
+		
+		$data = file_get_contents("https://raw.githubusercontent.com/roblesterjr04/statefulcms/$git/update/version.txt");
 		
 		$data_lines = explode("\n", $data);
 		$line = explode(":", $data_lines[0]);
@@ -60,7 +62,8 @@ class CP_Update {
 	}
 	
 	public function update_core($update) {
-		$package = file_get_contents('https://github.com/roblesterjr04/statefulcms/archive/master.zip');
+		$git = GIT_BRANCH;
+		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
 		file_put_contents(__DIR__ . '/update_package.zip', $package);
 		
 		mkdir(__DIR__ . '/statefulcms-master');
@@ -112,6 +115,12 @@ class CP_Update {
 					} else {
 						unlink(__DIR__ . '/../' . $value);
 					}
+				}
+				if ($line_parts[0] == 'Config') {
+					$value = trim($line_parts[1]);
+					$config = file_get_contents(__DIR__ . '/../cp-config.php');
+					$config .= "\n\n$value";
+					file_put_contents(__DIR__ . '/../cp-config.php', $config);
 				}
 			}
 		}
