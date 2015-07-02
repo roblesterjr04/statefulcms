@@ -1,4 +1,8 @@
-Version: 0.3
+Version: 0.4
+
+# About the update
+Description: Maintenance update.
+
 # What to update
 Replace: core
 Replace: update
@@ -6,4 +10,3 @@ Replace: admin
 Replace: js
 Replace: install
 Replace: themes/cp_default
-Remove: update/client
