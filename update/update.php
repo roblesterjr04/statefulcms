@@ -116,6 +116,12 @@ class CP_Update {
 						unlink(__DIR__ . '/../' . $value);
 					}
 				}
+				if ($line_parts[0] == 'Config') {
+					$value = trim($line_parts[1]);
+					$config = file_get_contents(__DIR__ . '/../cp-config.php');
+					$config .= "\n\n$value";
+					file_put_contents(__DIR__ . '/../cp-config.php', $config);
+				}
 			}
 		}
 		
