@@ -10,33 +10,12 @@ class CP_Update {
 		$this->version = root()->settings->get('running_sha');
 	}
 	
-	public function has_update() {
-		
-		require_once(__DIR__ . '/client/GitHubClient.php');
-	
-		$owner = 'roblesterjr04';
-		$repo = 'statefulcms';
-		
-		$client = new GitHubClient();
-		$client->setPage();
-		$client->setPageSize(1);
-		$commits = $client->repos->commits->listCommitsOnRepository($owner, $repo);
-		
-		foreach($commits as $commit)
-		{
-			$running_sha = $this->version;
-			$current_sha = $commit->getSha();
-			
-			return $running_sha == $current_sha ? false : $current_sha;
-		}
-		
-	}
-	
 	public function check_for_update() {
 		
 		$git = GIT_BRANCH;
+		$v = time();
 		
-		$data = file_get_contents("https://raw.githubusercontent.com/roblesterjr04/statefulcms/$git/update/version.txt");
+		$data = file_get_contents("https://raw.githubusercontent.com/roblesterjr04/statefulcms/$git/update/version.txt?v=$v");
 		
 		$data_lines = explode("\n", $data);
 		$line = explode(":", $data_lines[0]);
@@ -61,14 +40,8 @@ class CP_Update {
 		} 
 	}
 	
-	public function update_core($update) {
-		$git = GIT_BRANCH;
-		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
-		file_put_contents(__DIR__ . '/update_package.zip', $package);
-		
-		mkdir(__DIR__ . '/statefulcms-master');
-		
-		$zip = zip_open(__DIR__ . '/update_package.zip');
+	private function unzip_package($package) {
+		$zip = zip_open($package);
 		if ($zip) {
 			while ($zip_entry = zip_read($zip)) {
 				$entry_name = zip_entry_name($zip_entry);
@@ -87,8 +60,10 @@ class CP_Update {
 			}
 			zip_close($zip);
 		}
-		
-		$data = file_get_contents(__DIR__ . '/statefulcms-master/update/version.txt');
+	}
+	
+	private function parse_version_file($file) {
+		$data = file_get_contents($file);
 		
 		$data_lines = explode("\n", $data);
 		
@@ -124,6 +99,18 @@ class CP_Update {
 				}
 			}
 		}
+	}
+	
+	public function update_core($update) {
+		$git = GIT_BRANCH;
+		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
+		file_put_contents(__DIR__ . '/update_package.zip', $package);
+		
+		mkdir(__DIR__ . '/statefulcms-master');
+		
+		$this->unzip_package(__DIR__ . '/update_package.zip');
+		
+		$this->parse_version_file(__DIR__ . '/statefulcms-master/update/version.txt');
 		
 		$this->delTree(__DIR__ . '/statefulcms-master');
 		unlink(__DIR__ . '/update_package.zip');
