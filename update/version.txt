@@ -6,3 +6,4 @@ Replace: admin
 Replace: js
 Replace: install
 Replace: themes/cp_default
+Remove: update/client
