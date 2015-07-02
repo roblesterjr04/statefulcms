@@ -26,6 +26,8 @@ root()->hooks->action->add('cp_notice', 'cp_notice_template', 10, 2);*/
 
 class default_theme extends CP_Object {
 	
+	public $menus = ['site'];
+	
 	public function __construct() {
 		parent::__construct('default_theme');
 	}

@@ -30,21 +30,15 @@ root()->authentication->secure(true);
 				  <span class="icon-bar"></span>
 				  <span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">Brand</a>
+				<a class="navbar-brand" href="<?= root()->settings->get('cp_site_url') ?>/admin/">StatefulCMS</a>
 				</div>
 				
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 				  <li class="dropdown">
-				    <a href="<?= root()->settings->get('cp_site_url') ?>" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?= root()->settings->get('cp_site_name') ?: 'My Site' ?> <span class="caret"></span></a>
-				    <ul class="dropdown-menu" role="menu">
-				      <li><a href="<?= root()->settings->get('cp_site_url') ?>">Visit Site</a></li>
-				      <li class="divider"></li>
-				      <li><a href="#">Separated link</a></li>
-				      <li class="divider"></li>
-				      <li><a href="#">One more separated link</a></li>
-				    </ul>
+				    <a href="<?= root()->settings->get('cp_site_url') ?>" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?= root()->settings->get('cp_site_name') ?: 'Site Menu' ?> <span class="caret"></span></a>
+				    <? root()->components->admin_menu('site', 'dropdown-menu') ?>
 				  </li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">

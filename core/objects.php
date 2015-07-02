@@ -7,6 +7,8 @@ class CP_Object {
 	public $controls;
 	public $state;
 	
+	public $menus = ['side'];
+	
 	public $is_public = true;
 	
 	public $object_table = 'object_items';
