@@ -119,8 +119,7 @@ class CP_Update {
 				if ($line_parts[0] == 'Config') {
 					$value = trim($line_parts[1]);
 					$config = file(__DIR__ . '/../cp-config.php');
-					$config[] = $value;
-					$config = implode("\n", $config);
+					if (!in_array($value, $config)) $config[] = $value;
 					file_put_contents(__DIR__ . '/../cp-config.php', $config);
 				}
 			}
