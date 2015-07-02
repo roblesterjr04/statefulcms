@@ -73,11 +73,11 @@ class CP_Update {
 			while ($zip_entry = zip_read($zip)) {
 				$entry_name = zip_entry_name($zip_entry);
 				$directory = substr($entry_name, strlen($entry_name) - 1, 1) == '/';
-				$fp = fopen(__DIR__ . '/'.$entry_name, "w");
 				if (zip_entry_open($zip, $zip_entry, "r")) {
 					if ($directory) {
 						mkdir(__DIR__ . '/'.$entry_name);
 					} else {
+						$fp = fopen(__DIR__ . '/'.$entry_name, "w");
 						$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
 						fwrite($fp,"$buf");
 						zip_entry_close($zip_entry);
@@ -118,8 +118,9 @@ class CP_Update {
 				}
 				if ($line_parts[0] == 'Config') {
 					$value = trim($line_parts[1]);
-					$config = file_get_contents(__DIR__ . '/../cp-config.php');
-					$config .= "\n\n$value";
+					$config = file(__DIR__ . '/../cp-config.php');
+					$config[] = $value;
+					$config = implode("\n", $config);
 					file_put_contents(__DIR__ . '/../cp-config.php', $config);
 				}
 			}
