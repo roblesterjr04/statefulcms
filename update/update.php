@@ -32,6 +32,18 @@ class CP_Update {
 		
 	}
 	
+	public function check_for_update() {
+		
+		$data = file_get_contents('https://raw.githubusercontent.com/roblesterjr04/statefulcms/master/update/version.txt');
+		
+		$data_lines = explode("\n", $data);
+		$line = explode(":", $data_lines[0]);
+		$version = trim($line[1]);
+		
+		return $version == $this->version ? false : $version;
+		
+	}
+	
 	private function delTree($dir) { 
 		$files = array_diff(scandir($dir), array('.','..')); 
 		foreach ($files as $file) { 
@@ -122,7 +134,7 @@ class Update_Control extends CP_Object {
 	
 	public function title() {
 		$count = 0;
-		//if (root()->update->has_update()) $count++;
+		if (root()->update->check_for_update()) $count++;
 		return 'Updates <span class="badge">'.($count ?: '').'</span>';
 	}
 	
@@ -133,7 +145,7 @@ class Update_Control extends CP_Object {
 	}
 	
 	public function admin() {
-		$update = root()->update->has_update();
+		$update = root()->update->check_for_update();
 		
 		if ($update) {
 			$this->state->update_version = $update;
