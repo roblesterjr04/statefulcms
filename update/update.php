@@ -63,6 +63,8 @@ class CP_Update {
 	}
 	
 	private function parse_version_file($file) {
+		$git = GIT_BRANCH;
+		
 		$data = file_get_contents($file);
 		
 		$data_lines = explode("\n", $data);
@@ -72,10 +74,10 @@ class CP_Update {
 			if (isset($line_parts[0]) && isset($line_parts[1])) {
 				if ($line_parts[0] == 'Replace') {
 					$value = trim($line_parts[1]);
-					if (is_dir(__DIR__ . '/statefulcms-master/' . $value)) {
-						$this->replaceTree(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
+					if (is_dir(__DIR__ . "/statefulcms-$git/" . $value)) {
+						$this->replaceTree(__DIR__ . "/statefulcms-$git/" . $value, __DIR__ . '/../' . $value);
 					} else {
-						rename(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
+						rename(__DIR__ . "/statefulcms-$git/" . $value, __DIR__ . '/../' . $value);
 					}
 				}
 				if ($line_parts[0] == 'Setting') {
@@ -106,13 +108,13 @@ class CP_Update {
 		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
 		file_put_contents(__DIR__ . '/update_package.zip', $package);
 		
-		mkdir(__DIR__ . '/statefulcms-master');
+		mkdir(__DIR__ . '/statefulcms-'.$git);
 		
 		$this->unzip_package(__DIR__ . '/update_package.zip');
 		
-		$this->parse_version_file(__DIR__ . '/statefulcms-master/update/version.txt');
+		$this->parse_version_file(__DIR__ . "/statefulcms-$git/update/version.txt");
 		
-		$this->delTree(__DIR__ . '/statefulcms-master');
+		$this->delTree(__DIR__ . '/statefulcms-'.$git);
 		unlink(__DIR__ . '/update_package.zip');
 		
 		root()->settings->set('running_sha', $update);
