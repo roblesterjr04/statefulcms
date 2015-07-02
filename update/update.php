@@ -12,7 +12,7 @@ class CP_Update {
 	
 	public function check_for_update() {
 		
-		$git = GIT_BRANCH;
+		$git = GIT_BRANCH ?: 'master';
 		$v = time();
 		
 		$data = file_get_contents("https://raw.githubusercontent.com/roblesterjr04/statefulcms/$git/update/version.txt?v=$v");
@@ -63,7 +63,7 @@ class CP_Update {
 	}
 	
 	private function parse_version_file($file) {
-		$git = GIT_BRANCH;
+		$git = GIT_BRANCH ?: 'master';
 		
 		$data = file_get_contents($file);
 		
@@ -104,7 +104,7 @@ class CP_Update {
 	}
 	
 	public function update_core($update) {
-		$git = GIT_BRANCH;
+		$git = GIT_BRANCH ?: 'master';
 		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
 		file_put_contents(__DIR__ . '/update_package.zip', $package);
 		
