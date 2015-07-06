@@ -14,6 +14,7 @@ require_once 'objects.php';
 require_once 'authenticate.php';
 require_once 'interface.php';
 require_once 'controls.php';
+require_once 'plugins.php';
 require_once __DIR__ . '/../update/update.php';
 
 

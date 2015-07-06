@@ -14,8 +14,6 @@ class CP_Themes {
 		$this->current_theme = $ct;
 		$this->current_theme_dir = CP_WORKING_DIR . '/themes/' . $ct;
 		
-		
-		
 	}
 	
 	public function init_theme() {

@@ -264,13 +264,16 @@ class CP_Timer extends CP_Control {
 
 	public function __construct($name, $interval, $options = [], $owner) {
 		$this->interval = $interval;
+		$options['name'] = $name;
+		$options['id'] = $name;
 		parent::__construct($name, $options, $owner)->bind('tick');
 		return $this;
 	}
 	
 	public function markup() {
 		$sender = base64_encode(serialize($this));
-		$output = "<script type=\"text/javascript\" name=\"{$this->name}\">var int_{$this->name} = setInterval(function() { cp_state('{$this->name}', sessionState,'$sender', 'tick'); }, {$this->interval});</script>$sessionstate";
+		$atts = $this->atts();
+		$output = "<span $atts><script type=\"text/javascript\">var int_{$this->name} = setInterval(function() { $('span[name=\"{$this->name}\"]').trigger('tick'); }, {$this->interval});</script></span>";
 		return $output;
 	}
 	
