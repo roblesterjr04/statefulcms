@@ -74,3 +74,11 @@ function root() {
 	return $root;
 }
 
+function filter($filter, $callback) {
+	root()->hooks->filter->add($filter, $callback);
+}
+
+function action($action, $callback) {
+	root()->hooks->action->add($action, $callback);
+}
+

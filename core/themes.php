@@ -66,10 +66,10 @@ class CP_Themes {
 
 class CP_Components {
 		
-	public function admin_menu($menu = 'side', $class = 'nav nav-pills nav-stacked') {
+	public function admin_menu($menu = 'side', $class = 'nav nav-pills nav-stacked', $echo = true) {
 		$objects = root()->hooks->stack['object'];
 		$class = root()->hooks->filter->apply('admin_menu_class', $class);
-		echo '<ul class="'.$class.'">';
+		$output = '<ul class="'.$class.'">';
 		foreach ($objects as $object=>$a) {
 			if (class_exists($object)) {
 				$item = new $object;
@@ -77,10 +77,11 @@ class CP_Components {
 				$item = new CP_Object($object);
 			}
 			
-			if (in_array($menu, $item->menus)) echo $item->menu();
+			if (in_array($menu, $item->menus)) $output .= $item->menu();
 		}
-		root()->hooks->action->perform($menu.'_admin_menu');
-		echo '</ul>';
+		$output .= '</ul>';
+		if ($echo) echo $output;
+		return $output;
 	}
 	
 	public function head() {

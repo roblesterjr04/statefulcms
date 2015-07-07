@@ -220,13 +220,14 @@ class CP_Menu_Item extends CP_Control {
 	public function markup() {
 		$submenu = root()->hooks->filter->apply($this->name . '_submenu', '');
 		$props = '';
+		$span = '';
 		if ($submenu) {
 			$this->unbind('click');
-			$submenu = ' <span class="caret"></span>' . $submenu;
+			$span = ' <span class="caret"></span>';
 			$props = 'class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"';
 		}
 		$atts = $this->atts();
-		$output = "<li $atts><a href=\"#\" $props>{$this->options['text']}$submenu</a></li>";
+		$output = "<li $atts><a href=\"#\" $props>{$this->options['text']}$span</a>$submenu</li>";
 		return $output;
 	}
 	

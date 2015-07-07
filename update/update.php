@@ -128,7 +128,7 @@ class CP_Update {
 
 class Update_Control extends CP_Object {
 	
-	public $menus = ['top','side'];
+	public $menus = [];
 	
 	public function __construct() {
 		parent::__construct('Update_Control');

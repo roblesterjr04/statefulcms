@@ -2,6 +2,8 @@
 	
 require_once '../cp-config.php';
 require_once '../core/init.php';
+
+require_once 'functions.php';
 	
 root()->authentication->secure(true);
 
@@ -36,13 +38,8 @@ root()->authentication->secure(true);
 				
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">
-				  <li class="dropdown">
-				    <a href="<?= root()->settings->get('cp_site_url') ?>" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?= root()->settings->get('cp_site_name') ?: 'Menu' ?> <span class="caret"></span></a>
-				    <? root()->components->admin_menu('site', 'dropdown-menu'); ?>
-				  </li>
-				  <? root()->hooks->action->perform('toolbar_menu_item') ?>
-				</ul>
+				<? root()->hooks->action->perform('navbar_menus') ?>
+				<? $left_menu = new CP_Menu('navbar_left', ['class'=>'nav navbar-nav'], root()->objects->get_object() ?: root()->objects->get_object('CP_Root')); $left_menu->display(); ?>
 				<? $right_menu = new CP_Menu('navbar_right', ['class'=>'nav navbar-nav navbar-right'], root()->objects->get_object() ?: root()->objects->get_object('CP_Root')); $right_menu->display(); ?>
 				</div><!-- /.navbar-collapse -->
 				</div><!-- /.container-fluid -->
