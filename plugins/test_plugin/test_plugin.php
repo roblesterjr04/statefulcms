@@ -13,8 +13,11 @@ function test_plugin_right_menu_dropdown() {
 root()->hooks->filter->add('tp_right_top_submenu', 'test_plugin_right_menu_dropdown');
 
 function test_plugin_right_menu_items() {
-	$item = new CP_Menu_Item('tp_item', 'Click', [], root()->objects->get_object());
-	return $item->control();
+	$object = root()->objects->get_object();
+	if ($object) {
+		$item = new CP_Menu_Item('tp_item', 'Click', [], $object);
+		return $item->control();
+	}
 }
 root()->hooks->filter->add('tp_dropdown_menu_items', 'test_plugin_right_menu_items');
 
