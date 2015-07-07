@@ -14,8 +14,6 @@ class CP_Themes {
 		$this->current_theme = $ct;
 		$this->current_theme_dir = CP_WORKING_DIR . '/themes/' . $ct;
 		
-		
-		
 	}
 	
 	public function init_theme() {
@@ -68,9 +66,9 @@ class CP_Themes {
 
 class CP_Components {
 		
-	public function admin_menu() {
+	public function admin_menu($menu = 'side', $class = 'nav nav-pills nav-stacked') {
 		$objects = root()->hooks->stack['object'];
-		$class = root()->hooks->filter->apply('admin_menu_class', 'nav nav-pills nav-stacked');
+		$class = root()->hooks->filter->apply('admin_menu_class', $class);
 		echo '<ul class="'.$class.'">';
 		foreach ($objects as $object=>$a) {
 			if (class_exists($object)) {
@@ -79,8 +77,9 @@ class CP_Components {
 				$item = new CP_Object($object);
 			}
 			
-			echo $item->menu();
+			if (in_array($menu, $item->menus)) echo $item->menu();
 		}
+		root()->hooks->action->perform($menu.'_admin_menu');
 		echo '</ul>';
 	}
 	
@@ -89,6 +88,7 @@ class CP_Components {
 	}
 	
 	public function state_script() {
+		echo '<script type="text/javascript">var state_host = "'.root()->settings->get('cp_site_url').'/admin/state.php";</script>';
 		echo '<script type="text/javascript">var ajax_host = "'.root()->settings->get('cp_site_url').'/admin/ajax.php";</script>';
 		echo '<script type="text/javascript" src="'.root()->settings->get('cp_site_url').'/js/state.js"></script>';
 	}

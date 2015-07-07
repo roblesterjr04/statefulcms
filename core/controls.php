@@ -136,13 +136,15 @@ class CP_Control {
 	
 	protected function event_handler($event) {
 		$name = $this->name;
+		$owner = $this->owner->_slug;
 		$sender = base64_encode(serialize($this));
-		return "cp_ajax('$name',sessionState,'$sender','$event'); return false;";
+		return "cp_state('$name',{$owner}_sessionState,'$sender','$event'); return false;";
 	}
 	
 	protected function set_session_state() {
 		$object = base64_encode(serialize($this->owner));
-		return "<script id=\"setSessionFor{$this->name}\">sessionState = '$object';</script>";
+		$name = $this->owner->_slug;
+		return "<script id=\"setSessionFor{$this->name}\">{$name}_sessionState = '$object';</script>";
 	}
 	
 	protected function save_state($object) {
@@ -183,6 +185,49 @@ class CP_Button extends CP_Control {
 		$options['type'] = 'submit';
 		parent::__construct($name, $options, $owner)->bind('click');
 		return $this;
+	}
+	
+}
+
+class CP_Menu extends CP_Control {
+	
+	public function __construct($name, $options = [], $owner) {
+		$options['name'] = $name;
+		$options['id'] = $name;
+		parent::__construct($name, $options, $owner);
+		return $this;
+	}
+	
+	public function markup() {
+		$atts = $this->atts();
+		$items = root()->hooks->filter->apply($this->name . '_menu_items', '');
+		$output = "<ul $atts>$items</ul>";
+		return $output;
+	}
+	
+}
+
+class CP_Menu_Item extends CP_Control {
+	
+	public function __construct($name, $text, $options = [], $owner) {
+		$options['name'] = $name;
+		$options['id'] = $name;
+		$options['text'] = $text;
+		parent::__construct($name, $options, $owner)->bind('click');
+		return $this;
+	}
+	
+	public function markup() {
+		$submenu = root()->hooks->filter->apply($this->name . '_submenu', '');
+		$props = '';
+		if ($submenu) {
+			$this->unbind('click');
+			$submenu = ' <span class="caret"></span>' . $submenu;
+			$props = 'class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"';
+		}
+		$atts = $this->atts();
+		$output = "<li $atts><a href=\"#\" $props>{$this->options['text']}$submenu</a></li>";
+		return $output;
 	}
 	
 }
@@ -264,14 +309,73 @@ class CP_Timer extends CP_Control {
 
 	public function __construct($name, $interval, $options = [], $owner) {
 		$this->interval = $interval;
+		$options['name'] = $name;
+		$options['id'] = $name;
 		parent::__construct($name, $options, $owner)->bind('tick');
 		return $this;
 	}
 	
 	public function markup() {
 		$sender = base64_encode(serialize($this));
-		$output = "<script type=\"text/javascript\" name=\"{$this->name}\">var int_{$this->name} = setInterval(function() { cp_ajax('{$this->name}', sessionState,'$sender', 'tick'); }, {$this->interval});</script>$sessionstate";
+		$atts = $this->atts();
+		$output = "<span $atts><script type=\"text/javascript\">var int_{$this->name} = setInterval(function() { $('span[name=\"{$this->name}\"]').trigger('tick'); }, {$this->interval});</script></span>";
 		return $output;
+	}
+	
+}
+
+class CP_Image extends CP_Control {
+	
+	public function __construct($name, $image, $options = [], $owner) {
+		$options['src'] = $image;
+		$options['name'] = $name;
+		$options['id'] = $name;
+		parent::__construct($name, $options, $owner);
+		$this->bind('click');
+		return $this;
+	}
+	
+	public function markup() {
+		$atts = $this->atts();
+		$output = "<img $atts />";
+		return $output;
+	}
+	
+}
+
+class CP_Ajax extends CP_Control {
+	
+	public $image;
+	
+	public function __construct($name, $callback, $options = [], $owner) {
+		$options['name'] = $name;
+		$options['id'] = $name;
+		$options['callback'] = $callback;
+		$image = root()->settings->get('cp_site_url') . '/admin/images/ajax-loader.gif';
+		$this->image = "<img src=\"$image\" />";
+		parent::__construct($name, $options, $owner)->bind('update');
+	}
+	
+	public function markup() {
+		$atts = $this->atts();
+		$output = "<div $atts>{$this->image}</div>";
+		return $output;
+	}
+	
+	public function update($callback = false) {
+		
+		if (!$callback) $callback = $this->options['callback'];
+		
+		global $state_return;
+		
+		$slug = $this->owner->_slug;
+		
+		$script = "$('div[name=\"{$this->name}\"]').trigger('update').html('{$this->image}'); cp_ajax('{$this->name}', {$slug}_sessionState, '$callback');";
+		
+		if (!$state_return) $script = "<script>$script</script>";
+		
+		echo $script;
+		
 	}
 	
 }

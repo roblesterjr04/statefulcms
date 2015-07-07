@@ -1,4 +1,4 @@
-Version: 0.5
+Version: 0.04
 
 # About the update
 Description: Maintenance update.
@@ -10,5 +10,3 @@ Replace: admin
 Replace: js
 Replace: install
 Replace: themes/cp_default
-
-Config: define('GIT_BRANCH', 'master');

@@ -10,33 +10,12 @@ class CP_Update {
 		$this->version = root()->settings->get('running_sha');
 	}
 	
-	public function has_update() {
-		
-		require_once(__DIR__ . '/client/GitHubClient.php');
-	
-		$owner = 'roblesterjr04';
-		$repo = 'statefulcms';
-		
-		$client = new GitHubClient();
-		$client->setPage();
-		$client->setPageSize(1);
-		$commits = $client->repos->commits->listCommitsOnRepository($owner, $repo);
-		
-		foreach($commits as $commit)
-		{
-			$running_sha = $this->version;
-			$current_sha = $commit->getSha();
-			
-			return $running_sha == $current_sha ? false : $current_sha;
-		}
-		
-	}
-	
 	public function check_for_update() {
 		
-		$git = GIT_BRANCH;
+		$git = GIT_BRANCH ?: 'master';
+		$v = time();
 		
-		$data = file_get_contents("https://raw.githubusercontent.com/roblesterjr04/statefulcms/$git/update/version.txt");
+		$data = file_get_contents("https://raw.githubusercontent.com/roblesterjr04/statefulcms/$git/update/version.txt?v=$v");
 		
 		$data_lines = explode("\n", $data);
 		$line = explode(":", $data_lines[0]);
@@ -61,14 +40,8 @@ class CP_Update {
 		} 
 	}
 	
-	public function update_core($update) {
-		$git = GIT_BRANCH;
-		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
-		file_put_contents(__DIR__ . '/update_package.zip', $package);
-		
-		mkdir(__DIR__ . '/statefulcms-master');
-		
-		$zip = zip_open(__DIR__ . '/update_package.zip');
+	private function unzip_package($package) {
+		$zip = zip_open($package);
 		if ($zip) {
 			while ($zip_entry = zip_read($zip)) {
 				$entry_name = zip_entry_name($zip_entry);
@@ -87,8 +60,12 @@ class CP_Update {
 			}
 			zip_close($zip);
 		}
+	}
+	
+	private function parse_version_file($file) {
+		$git = GIT_BRANCH ?: 'master';
 		
-		$data = file_get_contents(__DIR__ . '/statefulcms-master/update/version.txt');
+		$data = file_get_contents($file);
 		
 		$data_lines = explode("\n", $data);
 		
@@ -97,10 +74,10 @@ class CP_Update {
 			if (isset($line_parts[0]) && isset($line_parts[1])) {
 				if ($line_parts[0] == 'Replace') {
 					$value = trim($line_parts[1]);
-					if (is_dir(__DIR__ . '/statefulcms-master/' . $value)) {
-						$this->replaceTree(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
+					if (is_dir(__DIR__ . "/statefulcms-$git/" . $value)) {
+						$this->replaceTree(__DIR__ . "/statefulcms-$git/" . $value, __DIR__ . '/../' . $value);
 					} else {
-						rename(__DIR__ . '/statefulcms-master/' . $value, __DIR__ . '/../' . $value);
+						rename(__DIR__ . "/statefulcms-$git/" . $value, __DIR__ . '/../' . $value);
 					}
 				}
 				if ($line_parts[0] == 'Setting') {
@@ -119,14 +96,25 @@ class CP_Update {
 				if ($line_parts[0] == 'Config') {
 					$value = trim($line_parts[1]);
 					$config = file(__DIR__ . '/../cp-config.php');
-					$config[] = $value;
-					$config = implode("\n", $config);
+					if (!in_array($value, $config)) $config[] = $value;
 					file_put_contents(__DIR__ . '/../cp-config.php', $config);
 				}
 			}
 		}
+	}
+	
+	public function update_core($update) {
+		$git = GIT_BRANCH ?: 'master';
+		$package = file_get_contents("https://github.com/roblesterjr04/statefulcms/archive/$git.zip");
+		file_put_contents(__DIR__ . '/update_package.zip', $package);
 		
-		$this->delTree(__DIR__ . '/statefulcms-master');
+		mkdir(__DIR__ . '/statefulcms-'.$git);
+		
+		$this->unzip_package(__DIR__ . '/update_package.zip');
+		
+		$this->parse_version_file(__DIR__ . "/statefulcms-$git/update/version.txt");
+		
+		$this->delTree(__DIR__ . '/statefulcms-'.$git);
 		unlink(__DIR__ . '/update_package.zip');
 		
 		root()->settings->set('running_sha', $update);
@@ -137,6 +125,8 @@ class CP_Update {
 }
 
 class Update_Control extends CP_Object {
+	
+	public $menus = ['top','side'];
 	
 	public function __construct() {
 		parent::__construct('Update_Control');
@@ -149,22 +139,24 @@ class Update_Control extends CP_Object {
 	}
 	
 	public function update_button_click($sender) {
-		$updating = root()->update->update_core($this->state->update_version);
-		$this->controls->update_label->val('Done.');
-		root()->iface->refresh();
+		$this->controls->ajax_update->update('ajax_update_core');
 	}
 	
-	public function admin() {
+	public function ajax_update_core() {
+		root()->update->update_core($this->state->update_version);
+		echo "<h3>Update Complete.</h3>";
+		$this->ajax_update_check();
+	}
+	
+	public function ajax_update_check() {
 		$update = root()->update->check_for_update();
 		
 		if ($update) {
 			$this->state->update_version = $update;
 			$button = new CP_Button('update_button', 'Update Now', ['class'=>'btn btn-success'], $this);
-			$label = new CP_Label('update_label', '', [], $this);
 			?>
 				<p>There is an update available: <?= $update ?></p>
 				<? $button->display() ?>
-				<? $label->display() ?>
 			<?
 		} else {
 			?>
@@ -174,6 +166,18 @@ class Update_Control extends CP_Object {
 		?>
 			<p>You are running version: <?= root()->settings->get('running_sha') ?></p>
 		<?
+	}
+	
+	public function check_again_click($sender) {
+		$this->controls->ajax_update->update();
+	}
+	
+	public function admin() {
+		$button = new CP_Button('check_again', 'Check Again...', ['class'=>'btn btn-default'], $this);
+		$button->display();
+		echo "<br/><br/>";
+		$display = new CP_Ajax('ajax_update', 'ajax_update_check', [], $this);
+		$display->display()->update();
 	}
 	
 }

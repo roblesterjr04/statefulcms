@@ -3,9 +3,11 @@
 
 class CP_Object {
 	
-	protected $_slug;
+	public $_slug;
 	public $controls;
 	public $state;
+	
+	public $menus = ['side'];
 	
 	public $is_public = true;
 	
@@ -128,8 +130,9 @@ class CP_Object {
 	
 	public function update_control_state($control, $value) {
 		$this->controls->$control->val($value, false);
+		$slug = $this->_slug;
 		$encoded_object = root()->encode($this);
-		echo "sessionState = '$encoded_object';\n";
+		echo "{$slug}_sessionState = '$encoded_object';\n";
 	}
 	
 	public function add_control($control) {
