@@ -50,6 +50,7 @@ class CP_Foundation {
 		if ($this->type != 'install') $this->objects->add('CP_Users');
 		if ($this->type != 'install') $this->objects->add('Plugins');
 		if ($this->type != 'install') $this->objects->add('Update_Control');
+		if ($this->type != 'install') $this->objects->add('CP_Root');
 		
 		if ($this->type != 'install') $this->hooks->action->perform('init', $this);
 		
@@ -72,3 +73,4 @@ function root() {
 	global $root;
 	return $root;
 }
+

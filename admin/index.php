@@ -43,7 +43,7 @@ root()->authentication->secure(true);
 				  </li>
 				  <? root()->hooks->action->perform('toolbar_menu_item') ?>
 				</ul>
-				<? $right_menu = new CP_Menu('navbar_right', ['class'=>'nav navbar-nav navbar-right'], root()->objects->get_object()); $right_menu->display(); ?>
+				<? $right_menu = new CP_Menu('navbar_right', ['class'=>'nav navbar-nav navbar-right'], root()->objects->get_object() ?: root()->objects->get_object('CP_Root')); $right_menu->display(); ?>
 				</div><!-- /.navbar-collapse -->
 				</div><!-- /.container-fluid -->
 			</nav>

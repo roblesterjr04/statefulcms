@@ -489,3 +489,7 @@ class Theme_Manager extends CP_Object {
 	}
 	
 }
+
+class CP_Root extends CP_Object {
+	
+}
