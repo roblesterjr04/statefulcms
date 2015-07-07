@@ -79,6 +79,7 @@ class CP_Components {
 			
 			if (in_array($menu, $item->menus)) echo $item->menu();
 		}
+		root()->hooks->action->perform($menu.'_admin_menu');
 		echo '</ul>';
 	}
 	

@@ -48,8 +48,8 @@ class CP_Foundation {
 		if ($this->type != 'install') $this->objects->add('CP_Page');
 		if ($this->type != 'install') $this->objects->add('Theme_Manager');
 		if ($this->type != 'install') $this->objects->add('CP_Users');
-		if ($this->type != 'install') $this->objects->add('Update_Control');
 		if ($this->type != 'install') $this->objects->add('Plugins');
+		if ($this->type != 'install') $this->objects->add('Update_Control');
 		
 		if ($this->type != 'install') $this->hooks->action->perform('init', $this);
 		

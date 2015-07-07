@@ -49,6 +49,10 @@ class default_theme extends CP_Object {
 		$this->controls->my_timer->interval += 1000;
 	}
 	
+	public function my_button_click($sender) {
+		root()->iface->alert('Hey!');
+	}
+	
 	public function admin() {
 		$options = [];
 		$require_login_setting = root()->settings->get('theme_require_login');
@@ -62,6 +66,9 @@ class default_theme extends CP_Object {
 		$file = new CP_FileUpload('file', 'Upload a file here', '', [], $this);
 		$image = new CP_Image('my_image', 'http://cdn1.sciencefiction.com/wp-content/uploads/2013/09/Stargate.jpg', ['style'=>'max-width: 100%'], $this);
 		$timer = new CP_Timer('my_timer', 1000, [], $this);
+		
+		$my_button = new CP_Button('my_button', 'Click Me', ['class'=>'btn btn-success'], $this);
+		
 		?>
 			<div class="row">
 				<div class="col-sm-6">
@@ -72,7 +79,7 @@ class default_theme extends CP_Object {
 					<? $test_radio_1->display() ?>
 					<? $test_radio_2->display() ?>
 					<br/>
-					<? //$timer->display() ?>
+					<? $my_button->display() ?>
 				</div>
 			</div>
 			

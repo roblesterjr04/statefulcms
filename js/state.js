@@ -25,7 +25,7 @@ function cp_ajax(callback, theobject, theevent) {
 	});
 }
 
-function cp_state(callback, theobject, sender, theevent, data, getresponse, primaryevent) {
+function cp_state(callback, theobject, sender, theevent, data, getresponse, primaryevent, object_slug) {
 	var s = document.createElement("script");
 	//s.type = "text/javascript";
 	//s.id = "callback_" + callback;
@@ -57,7 +57,7 @@ function cp_state(callback, theobject, sender, theevent, data, getresponse, prim
 					accepts: 'text/plain',
 					data: {
 						callback: callback,
-						object: sessionState,
+						object: window[object_slug + '_sessionState'],
 						event: primaryevent,
 						sender: sender,
 						data: data

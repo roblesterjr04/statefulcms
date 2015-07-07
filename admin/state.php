@@ -13,18 +13,20 @@ $state_return = true;
 
 //$params = unserialize($_REQUEST['params']);
 
-$object = isset($_REQUEST['object']) ? $_REQUEST['object'] : false;
+$object_coded = isset($_REQUEST['object']) ? $_REQUEST['object'] : false;
 $data = isset($_REQUEST['data']) ? $_REQUEST['data'] : false;
 
 $callback = isset($_REQUEST['callback']) ? $_REQUEST['callback'] : false;
 
 $event = isset($_REQUEST['event']) ? $_REQUEST['event'] : false;
 
-echo "sessionState = '$object';\n";
+$object = root()->decode($object_coded);
+
+$slug = $object->_slug;
+
+echo "{$slug}_sessionState = '$object_coded';\n";
 
 echo "if (console) console.log('*');\n";
-
-$object = root()->decode($object);
 
 $func = $callback . '_' . $event;
 
@@ -42,7 +44,7 @@ if ($event == '_change' || $event == '_keyup') {
 		echo "var newval = $('*[name=\"$callback\"]').val();\n";
 	}
 	//echo "console.log('Executing state update: '+newval);\n";
-	echo "cp_state('$callback', sessionState, '$sender_in', 'update_state', newval, true, '".substr($event,1)."');\n\n";
+	echo "cp_state('$callback', {$slug}_sessionState, '$sender_in', 'update_state', newval, true, '".substr($event,1)."', '$slug');\n\n";
 }
 
 // We are being asked to update the state. 

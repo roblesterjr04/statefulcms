@@ -16,6 +16,15 @@ class Plugins extends CP_Object {
 		}
 	}
 	
+	public function admin() {
+		$ajax = new CP_Ajax('plugins_admin', 'plugins_admin_ajax', [], $this);
+		$ajax->display()->update();
+	}
+	
+	public function plugins_admin_ajax() {
+		parent::admin();
+	}
+	
 	public function object_list($limit = null, $offset = null, $order = null) {
 		$items = root()->plugins->plugins;
 		
@@ -29,8 +38,8 @@ class Plugins extends CP_Object {
 				'no_sort'=>true
 			]
 		];
-		
 		$table = new CP_Table('plugin_list', $items, $columns, ['class'=>'table'], $this);
+		
 		$table->display();
 		
 	}
