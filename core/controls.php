@@ -276,7 +276,6 @@ class CP_TextArea extends CP_Control {
 	
 	public function markup() {
 		$value = $this->options['value'];
-		unset($this->options['value']);
 		$atts = $this->atts($this->options);
 		$output = "<textarea name=\"{$this->name}\" $atts>$value</textarea>";
 		return $output;

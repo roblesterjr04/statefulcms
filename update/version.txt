@@ -1,4 +1,4 @@
-Version: 0.09
+Version: 0.10
 
 # About the update
 Description: Maintenance update.
