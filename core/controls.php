@@ -269,6 +269,7 @@ class CP_TextArea extends CP_Control {
 	
 	public function __construct($name, $text, $options = [], $owner) {
 		$options['value'] = $text;
+		$options['id'] = $name;
 		parent::__construct($name, $options, $owner)->bind('change');
 		return $this;
 	}
