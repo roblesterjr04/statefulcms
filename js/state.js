@@ -19,7 +19,8 @@ function cp_ajax(callback, theobject, theevent) {
 			callback: callback,
 			event: theevent,
 			object: theobject
-		}
+		},
+		type: 'POST'
 	}).done(function(data) {
 		$('div[name="'+callback+'"]').html(data);
 	});
