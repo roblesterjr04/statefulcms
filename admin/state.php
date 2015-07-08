@@ -11,8 +11,6 @@ require_once '../core/init.php';
 
 $state_return = true;
 
-//$params = unserialize($_REQUEST['params']);
-
 $object_coded = isset($_REQUEST['object']) ? $_REQUEST['object'] : false;
 $data = isset($_REQUEST['data']) ? $_REQUEST['data'] : false;
 
@@ -25,8 +23,6 @@ $object = root()->decode($object_coded);
 $slug = $object->_slug;
 
 echo "{$slug}_sessionState = '$object_coded';\n";
-
-echo "if (console) console.log('*');\n";
 
 $func = $callback . '_' . $event;
 
@@ -44,11 +40,13 @@ if ($event == '_change' || $event == '_keyup') {
 		echo "var newval = $('*[name=\"$callback\"]').val();\n";
 	}
 	//echo "console.log('Executing state update: '+newval);\n";
+	root()->iface->console("Initiating state update...");
 	echo "cp_state('$callback', {$slug}_sessionState, '$sender_in', 'update_state', newval, true, '".substr($event,1)."', '$slug');\n\n";
 }
 
 // We are being asked to update the state. 
 else if ($event == 'update_state') {
+	root()->iface->console("Updating the state...");
 	$object->update_control_state($callback, $data);
 }
 
@@ -57,7 +55,7 @@ else {
 	$sender = root()->decode($sender_in);
 
 	if (method_exists($object, $func)) {
-		echo "/* $func exists in owner. */\n\n";
+		root()->iface->console("Executing event: $event :: Object: $slug :: Control: $callback");
 		$object->$func($sender, $data);
 	}
 

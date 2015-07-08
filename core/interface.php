@@ -31,7 +31,7 @@ class CP_Interface {
 		$event = 'response';
 		$object = root()->encode($owner);
 		$sender = root()->encode($sender);
-		$script = "sessionState = '$object'; var iface_confirm_response = confirm('$message') ? 'OK' : 'Cancel'; cp_ajax('$name', sessionState, '$sender', '$event', iface_confirm_response, true);";
+		$script = "{$owner->slug}_sessionState = '$object'; var iface_confirm_response = confirm('$message') ? 'OK' : 'Cancel'; cp_state('$name', {$owner->slug}_sessionState, '$sender', '$event', iface_confirm_response, true);";
 		if ($echo) echo $script;
 		return $script;
 	}
@@ -41,7 +41,7 @@ class CP_Interface {
 		$event = 'response';
 		$object = root()->encode($owner);
 		$sender = root()->encode($sender);
-		$script = "sessionState = '$object'; var iface_prompt_response = prompt('$message'); cp_ajax('$name', sessionState, '$sender', '$event', iface_prompt_response, true);";
+		$script = "{$owner->slug}_sessionState = '$object'; var iface_prompt_response = prompt('$message'); cp_ajax('$name', {$owner->slug}_sessionState, '$sender', '$event', iface_prompt_response, true);";
 		if ($echo) echo $script;
 		return $script;
 	}

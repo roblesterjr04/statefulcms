@@ -22,6 +22,7 @@ class CP_Control {
 	public $owner;
 	public $events = [];
 	public $disabled = false;
+	public $hidden = false;
 	
 	protected function atts($options = false) {
 		$atts = [];
@@ -50,6 +51,7 @@ class CP_Control {
 	public function markup() {
 		if (!isset($this->options['id'])) $this->options['id'] = $this->name;
 		if ($this->disabled) $this->options['disabled'] = 'disabled';
+		if ($this->hidden) $this->options['style'] = 'display: none;';
 		$atts = $this->atts();
 		$output = "<input name=\"{$this->name}\" $atts/>";
 		return root()->hooks->filter->apply('cp_fields_control', $output);
@@ -87,7 +89,7 @@ class CP_Control {
 	}
 	
 	public function hide($echo = true) {
-		$script = root()->hooks->filter->apply('field_hide', '$(\'*[name="'.$this->name.'"]\').hide();');
+		$script = root()->hooks->filter->apply('field_hide', '$(\'*[name="'.$this->name.'"], #'.$this->options['id'].'\').hide();');
 		if ($echo) echo $script;
 		return $script;
 	}

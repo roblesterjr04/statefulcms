@@ -421,6 +421,8 @@ class CP_Page extends CP_Object {
 			$this->remove($id);
 			root()->iface->console("Deleted Page ID: $id");
 			$this->controls->pages_list->delete_row($id);
+		} else {
+			root()->iface->console("Cancelled");
 		}
 	}
 	
