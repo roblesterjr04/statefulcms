@@ -509,6 +509,7 @@ class CP_Select extends CP_Control {
 	public function __construct($name, $items, $selected = false, $options = [], $owner) {
 		$options['name'] = $name;
 		$options['id'] = $name;
+		$options['value'] = $selected;
 		$this->items = $items;
 		$this->selected = $selected;
 		parent::__construct($name, $options, $owner)->bind('change');

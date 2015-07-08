@@ -92,7 +92,8 @@ class CP_User {
 			$this->username = $username;
 			
 			$this->_get();
-			return $this;
+			return $this->user;
+			$properties = get_object_vars($this->user);
 		}
 		
 	}
@@ -100,7 +101,7 @@ class CP_User {
 	private function _get() {
 		$user_db = root()->db->get_where('users', array('user_name'=>$this->username));
 		if ($user_db->num_rows) {
-			$this->user = $user_db;
+			$this->user = $user_db[0];
 		}
 	}
 	private function _getmeta() {
