@@ -36,6 +36,8 @@ class CP_Control {
 	
 	public function __construct($name, $options, $owner) {
 		$options['data-control'] = 'control';
+		if (!isset($options['id'])) $options['id'] = $name;
+		if (!isset($options['name'])) $options['name'] = $name;
 		$this->options = $options;
 		$this->name = $name;
 		$this->owner = $owner;
@@ -53,7 +55,7 @@ class CP_Control {
 		if ($this->disabled) $this->options['disabled'] = 'disabled';
 		if ($this->hidden) $this->options['style'] = 'display: none;';
 		$atts = $this->atts();
-		$output = "<input name=\"{$this->name}\" $atts/>";
+		$output = "<input $atts/>";
 		return root()->hooks->filter->apply('cp_fields_control', $output);
 	}
 	
@@ -133,6 +135,12 @@ class CP_Control {
 	
 	public function remove($echo = true) {
 		$script = root()->hooks->filter->apply('field_remove', '$(\'*[name="'.$this->name.'"]\').remove();');
+		if ($echo) echo $script;
+		return $script;
+	}
+	
+	public function trigger($event, $echo = true) {
+		$script = root()->hooks->filter->apply('field_trigger', '$(\'*[name="'.$this->name.'"]\').trigger(\''.$event.'\');');
 		if ($echo) echo $script;
 		return $script;
 	}

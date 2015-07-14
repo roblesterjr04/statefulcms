@@ -81,3 +81,72 @@ $textbox->bind('change')->bind('click')->unbind('keyup');
 
 See what we did there? We bound change and click to the textbox, and unbound keyup, all on one line of code!
 
+## Custom Controls
+
+Want to make a custom control? Easy! Just extend the CP_Control class. There's lots of things to override or extend.
+
+The $options variable is parsed as the control tags attributes. So, $options['type']='email' will output type="email" in the html.
+
+This will basically create a textbox, but it will be of type "email" instead of type "text." (The default markup basically only outputs a standard html input tag with attributes)
+
+```php
+
+class Email_Control extends CP_Control {
+	
+	public function __construct($name, $text, $options, $owner) { 
+		// At the very minimum, you need to pass an owner in to the control. 
+		// We need an object to associate it with, and that object must be a subclass of CP_Object
+		
+		// Add/override some options in the options array
+		
+		$options['type'] = 'email';
+		$options['value'] = $text;
+		
+		// We also have to run the parent's construct.
+		parent::__construct($name, $options, $owner);
+		
+	}
+	
+}
+
+```
+
+Lets use it! Add this to the admin function of the object class.
+
+```php
+
+$email_address_field = new Email_Control('my_email', '', ['class'=>'text-box-class', 'placeholder'=>'Enter Email Address'], $this);
+
+$email_address_field->display();
+
+## or
+
+echo $email_address_field->control(); // Basically the same as display(), but returns control markup rather than echoing to screen.
+
+
+```
+
+Maybe we want a control with custom markup.
+
+```php
+
+class Special_Control extends CP_Control {
+	
+	public function __construct($name, $options, $owner) {	
+		parent::__construct($name, $options, $owner);
+	}
+	
+	// We want custom markup!
+	
+	public function markup() {
+		
+		$atts = $this->atts();
+		$output = "<div $atts>My custom control output!</div>";
+		
+		return $output;
+		
+	}
+	
+}
+
+```
