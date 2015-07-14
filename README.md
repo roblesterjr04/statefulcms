@@ -14,12 +14,19 @@ When you see "Done!" you can go to http://yoursite.com/admin/ and log in!
 
 ## Examples
 
+In the plugins directory, create a folder called my_plugin, and in it, a file named my_plugin.php
+
 ```php
 <?php
 
 ## my_plugin.php
 
 class My_Plugin extends CP_Object {
+
+  public function __construct() {
+    parent::__construct('My_Plugin');
+  }
+
   public function title() { // Returns the title of the module in places like the menu, or the parents admin() function
     return 'My Demo Plugin';
   }
@@ -38,17 +45,39 @@ class My_Plugin extends CP_Object {
     
   }
   
+  ## The state manager will do an ajax call and look for a function titled my_button_click
+  ## The function name is a combination of the control name (my_button) and the event that was fired (click)
+  ## most javascript events are handled, such as mouseenter, hover, mouseout, change, keyup .. etc.
+  
+  public function my_button_click($sender) {
+    // Do something cool in the background!
+    // Lets make a popup...
+    root()->iface->alert('Why did you hit the baby?');
+  }
+  
 }
 
-root()->objects->add('My_Plugin');
+root()->objects->add('My_Plugin'); // Tell the root to load this object on initialization
 ```
 
-Ok, so why was that so special? All we have to do to hook an action to this button is add this new function to the class.
+## Binding events
+
+Some controls have default events bound to them. Buttons have click, text boxes have keyup, and so on. But we want to bind more!
 
 ```php
-public function my_button_click($sender) {
-  // Do something cool in the background!
-  // Lets make a popup...
-  root()->iface->alert('Why did you hit the baby?');
-}
+$button = new CP_Button('my_button', 'Don't hit the baby!', [], $this);
+
+$button->bind('mouseout');
+$button->bind('hover');
 ```
+
+Thats pretty nice, right? Now you can write functions like my_button_mouseout() or my_button_hover(), and they'll get fired when the event happens on the front end.
+
+```php
+$textbox = new CP_TextField('my_text_field', '', [], $this);
+
+$textbox->bind('change')->bind('click')->unbind('keyup');
+```
+
+See what we did there? We bound change and click to the textbox, and unbound keyup, all on one line of code!
+
