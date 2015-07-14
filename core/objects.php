@@ -128,10 +128,9 @@ class CP_Object {
 		}
 	}
 	
-	public function update_control_state($control, $value, $echo = false) {
-		$this->controls->$control->val($value, $echo);
+	public function update_control_state($object = false) {
 		$slug = $this->_slug;
-		$encoded_object = root()->encode($this);
+		$encoded_object = root()->encode($object ?: $this);
 		echo "{$slug}_sessionState = '$encoded_object';\n";
 	}
 	

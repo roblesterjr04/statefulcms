@@ -81,6 +81,7 @@ class CP_Control {
 			$method = 'val';
 			if (get_class($this) == 'CP_Label') $method = 'text';
 			$script = '$(\'*[name="'.$this->name.'"]\').'.$method.'(\''.$text.'\');';
+			$this->owner->update_control_state();
 			if ($echo) echo $script;
 			return $script;
 		} else {

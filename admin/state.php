@@ -47,7 +47,7 @@ if ($event == '_change' || $event == '_keyup') {
 // We are being asked to update the state. 
 else if ($event == 'update_state') {
 	root()->iface->console("Updating the state...");
-	$object->update_control_state($callback, $data);
+	$object->controls->$callback->val($data, false);
 }
 
 else {
