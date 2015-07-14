@@ -99,7 +99,7 @@ class CP_User {
 	}
 	
 	private function _get() {
-		$user_db = root()->db->get_where('users', array('user_name'=>$this->username));
+		$user_db = root()->db->get_where('users', array('user_name'=>$this->username))->rows;
 		if ($user_db->num_rows) {
 			$this->user = $user_db[0];
 		}

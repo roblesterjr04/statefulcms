@@ -39,7 +39,7 @@ class CP_Control {
 		$this->options = $options;
 		$this->name = $name;
 		$this->owner = $owner;
-		$this->owner->add_control($this);
+		if (is_subclass_of($owner, 'CP_Object')) $this->owner->add_control($this);
 		return $this;
 	}
 	
