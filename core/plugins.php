@@ -2,6 +2,8 @@
 	
 class Plugins extends CP_Object {
 	
+	public $menus = ['side'];
+	
 	public function __construct() {
 		
 		parent::__construct('Plugins');

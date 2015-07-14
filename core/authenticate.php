@@ -112,6 +112,8 @@ class CP_User {
 
 class CP_Users extends CP_Object {
 	
+	public $menus = ['side'];
+	
 	public function __construct() {
 		parent::__construct('CP_Users');
 		$this->object_table = 'users';

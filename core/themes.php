@@ -77,7 +77,9 @@ class CP_Components {
 				$item = new CP_Object($object);
 			}
 			
-			if (in_array($menu, $item->menus)) $output .= $item->menu();
+			if (count($item->menus) && in_array($menu, $item->menus)) {
+				$output .= $item->menu();
+			}
 		}
 		$output .= '</ul>';
 		if ($echo) echo $output;

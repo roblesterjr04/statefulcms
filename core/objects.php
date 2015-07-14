@@ -7,7 +7,6 @@ class CP_Object {
 	public $controls;
 	public $state;
 	
-	public $menus = ['side'];
 	
 	public $is_public = true;
 	
@@ -238,6 +237,8 @@ class CP_Objects {
 
 class CP_Page extends CP_Object {
 	
+	public $menus = ['side'];
+	
 	public function __construct() {
 		parent::__construct('CP_Page');
 		root()->hooks->filter->add('theme_part', function($content) {
@@ -428,6 +429,8 @@ class CP_Page extends CP_Object {
 }
 
 class Theme_Manager extends CP_Object {
+	
+	public $menus = ['side'];
 	
 	public $is_public = false;
 	
