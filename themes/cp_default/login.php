@@ -11,7 +11,7 @@
 					</div>
 					<form class="form" method="post">
 						<div class="form-group">
-							<label for="username">Email Address</label>
+							<label for="username">User Name</label>
 							<input class="form-control" type="text" placeholder="Email Address" name="username" />
 						</div>
 						<div class="form-group">
