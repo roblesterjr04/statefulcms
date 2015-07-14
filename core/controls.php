@@ -77,11 +77,9 @@ class CP_Control {
 		return $output;
 	}
 	
-	public function val($text = false, $echo = true) {
+	public function val($text = false, $echo = true, $method = 'val') {
 		if ($text) {
 			$this->options['value'] = $text;
-			$method = 'val';
-			if (get_class($this) == 'CP_Label') $method = 'text';
 			$script = '$(\'*[name="'.$this->name.'"]\').'.$method.'(\''.$text.'\');';
 			$this->owner->update_control_state();
 			if ($echo) echo $script;
@@ -89,6 +87,14 @@ class CP_Control {
 		} else {
 			return $this->options['value'];
 		}
+	}
+	
+	public function text($text = false, $echo = true) {
+		$this->val($text, $echo, 'text');
+	}
+	
+	public function html($text = false, $echo = true) {
+		$this->val($text, $echo, 'html');
 	}
 	
 	public function hide($echo = true) {
@@ -123,6 +129,16 @@ class CP_Control {
 	
 	public function fore_color($color, $echo = true) {
 		$script = root()->hooks->filter->apply('field_fore_color', '$(\'*[name="'.$this->name.'"]\').css("color", "'.$color.'");');
+		if ($echo) echo $script;
+		return $script;
+	}
+	
+	public function css($styles = [], $echo = true) {
+		$script = "";
+		$name = $this->name;
+		foreach ($styles as $key=>$value) {
+			$script .= "$('#$name').css('$key', '$value');\n";
+		}
 		if ($echo) echo $script;
 		return $script;
 	}

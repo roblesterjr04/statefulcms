@@ -306,7 +306,7 @@ class CP_Page extends CP_Object {
 	 */
 	public function page_title_keyup($sender, $data) {
 		$value = $this->controls->page_title->val();
-		$this->controls->header_label->val($value);
+		$this->controls->header_label->text($value);
 	}
 	
 	public function front_end() {

@@ -134,6 +134,9 @@ class Special_Control extends CP_Control {
 	
 	public function __construct($name, $options, $owner) {	
 		parent::__construct($name, $options, $owner);
+		
+		$this->bind('mouseenter'); // Just for kicks, we'll bind the mouseenter event
+		
 	}
 	
 	// We want custom markup!
