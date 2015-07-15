@@ -486,9 +486,41 @@ class CP_FileUpload extends CP_Control {
 	public function markup() {
 		$atts = $this->atts();
 		$output = "<input $atts />";
+		$output = "<script>
+		
+		</script>";
 		return $output;
 	}
 	
+	public function upload() {
+		
+	}
+	
+}
+
+class CP_ProgressBar extends CP_Control {
+	
+	public function __construct($name, $progress, $options = [], $owner) {
+		parent::__construct($name, $options, $owner)->bind('update');
+		return $this;
+	}
+	
+	public function markup() {
+		$name = $this->name;
+		$output = "<div class=\"progress\" id=\"$name\">
+  <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"{$this->options['value']}\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: {$this->options['value']}%;\">
+    <span class=\"sr-only\"></span>
+  </div>
+</div>";
+		return $output;
+	}
+	
+	public function val($value, $echo = true) {
+		$name = $this->name;
+		$script = "$('#$name .progress-bar').css('width', '$value%').attr('aria-valuenow', '$value');";
+		if ($echo) echo $script;
+		return $script;
+	}
 	
 }
 
