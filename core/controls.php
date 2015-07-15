@@ -501,7 +501,7 @@ class CP_FileUpload extends CP_Control {
 class CP_ProgressBar extends CP_Control {
 	
 	public function __construct($name, $progress, $options = [], $owner) {
-		parent::__construct($name, $options, $owner)->bind('update');
+		parent::__construct($name, $options, $owner)->bind('change');
 		return $this;
 	}
 	
@@ -518,6 +518,7 @@ class CP_ProgressBar extends CP_Control {
 	public function val($value, $echo = true) {
 		$name = $this->name;
 		$script = "$('#$name .progress-bar').css('width', '$value%').attr('aria-valuenow', '$value');";
+		$this->trigger('change');
 		if ($echo) echo $script;
 		return $script;
 	}
