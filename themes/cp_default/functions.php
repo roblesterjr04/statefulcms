@@ -50,7 +50,7 @@ class default_theme extends CP_Object {
 	}
 	
 	public function my_button_click($sender) {
-		$this->controls->progress->val(65);
+		root()->iface->alert('Hey!');
 	}
 	
 	public function admin() {
@@ -67,8 +67,6 @@ class default_theme extends CP_Object {
 		$image = new CP_Image('my_image', 'http://cdn1.sciencefiction.com/wp-content/uploads/2013/09/Stargate.jpg', ['style'=>'max-width: 100%'], $this);
 		$timer = new CP_Timer('my_timer', 1000, [], $this);
 		
-		$progress = new CP_ProgressBar('progress', 40, [], $this);
-		
 		$my_button = new CP_Button('my_button', 'Click Me', ['class'=>'btn btn-success'], $this);
 		
 		?>
@@ -80,10 +78,6 @@ class default_theme extends CP_Object {
 					<? $test_dropdown->display() ?>
 					<? $test_radio_1->display() ?>
 					<? $test_radio_2->display() ?>
-					<br/>
-					<br />
-					<? $progress->display() ?>
-					<br />
 					<br/>
 					<? $my_button->display() ?>
 				</div>

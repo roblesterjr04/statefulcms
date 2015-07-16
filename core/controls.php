@@ -501,15 +501,13 @@ class CP_FileUpload extends CP_Control {
 class CP_ProgressBar extends CP_Control {
 	
 	public function __construct($name, $progress, $options = [], $owner) {
-		$options['value'] = $progress;
 		parent::__construct($name, $options, $owner)->bind('change');
 		return $this;
 	}
 	
 	public function markup() {
 		$name = $this->name;
-		$atts = $this->atts();
-		$output = "<div class=\"progress\" $atts>
+		$output = "<div class=\"progress\" id=\"$name\">
   <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"{$this->options['value']}\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: {$this->options['value']}%;\">
     <span class=\"sr-only\"></span>
   </div>
