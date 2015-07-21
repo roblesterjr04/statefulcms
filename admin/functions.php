@@ -32,3 +32,5 @@ filter('site_menu_submenu', 'index_toolbar_menu_items');
 class CP_Index extends CP_Object {
 	
 }
+
+

@@ -242,7 +242,8 @@ class CP_Page extends CP_Object {
 	public function __construct() {
 		parent::__construct('CP_Page');
 		root()->hooks->filter->add('theme_part', function($content) {
-			if ($_GET['mod'] == 'CP_Page' && $content == 'index') $content = 'page';
+			$object = root()->objects->get_object('CP_Page');
+			if ($_GET['mod'] == $object->_slug && $content == 'index') $content = 'page';
 			return $content;
 		});
 	}
@@ -490,6 +491,29 @@ class Theme_Manager extends CP_Object {
 		];
 		$table = new CP_Table('theme_list', $items, $columns, ['class'=>'table'], $this);
 		$table->display();
+	}
+	
+}
+
+class CP_Admin_Settings extends CP_Object {
+	
+	public $menus = ['side'];
+	
+	public function __construct() {
+		parent::__construct('CP_Admin_Settings');
+	}
+	
+	public function title() {
+		return 'Settings';
+	}
+	
+	public function admin() {
+		$file = CP_WORKING_DIR . '/.htaccess';
+		echo '<p>'.$file.'</p>';
+		if (file_exists($file)) echo '<p>Found HTAccess</p>';
+		$rewrite_text = file_get_contents($file);
+		$rewrites = new CP_TextArea('rewrite_rules', $rewrite_text, ['class'=>'form-control'], $this);
+		$rewrites->display();
 	}
 	
 }
