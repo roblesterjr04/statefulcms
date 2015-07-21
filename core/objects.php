@@ -252,9 +252,9 @@ class CP_Page extends CP_Object {
 		});
 	}
 	
-	public function rewrite($slug, $id) {
-		return 'page/'.$id;
-	}
+	/*public function rewrite($slug, $id) {
+		return $id;
+	}*/
 	
 	public function title() {
 		return 'Pages';
@@ -285,7 +285,8 @@ class CP_Page extends CP_Object {
 			'name' => $controls->page_title->val(),
 			'meta' => [
 				'page_content' => $controls->page_content->val(),
-				'date_modified' => date('n/j/Y')
+				'date_modified' => date('n/j/Y'),
+				'page_path' => $controls->page_path->val()
 			]
 		];
 		$data = root()->hooks->filter->apply('cp_page_save_data', $data);
@@ -320,8 +321,13 @@ class CP_Page extends CP_Object {
 	}
 	
 	public function front_end() {
-		$item = $this->get_item($_GET['id']);
-		echo $item->page_content;
+		$id = $_GET['id'];
+		$pages = root()->db->get_where('objectmeta', ['meta_name'=>'page_path', 'meta_value'=>$id])->rows;
+		if (count($pages)) {
+			$page = $pages[0];
+			$item = $this->get_item($page->meta_item);
+			echo $item->page_content;
+		}
 	}
 	
 	/**
@@ -336,6 +342,7 @@ class CP_Page extends CP_Object {
 			$this->state->page_save_id = $id ?: $_GET['id'];
 			$item = $this->get_item($_GET['id']);
 			$title_field = new CP_TextField('page_title', $item->name, array('placeholder'=>'Page Title', 'class'=>'form-control'), $this);
+			$path_field = new CP_TextField('page_path', $item->page_path, ['class'=>'form-control'], $this);
 			$editor = new CP_Editor('page_content', $item->page_content, array('class'=>'form-control'), $this);
 			$button = new CP_Button('page_save', 'Save', array('class'=>'btn btn-block btn-primary'), $this);
 			$button->bind('mouseenter');
@@ -352,6 +359,8 @@ class CP_Page extends CP_Object {
 					<? $notices->display() ?>
 					<h4>Title</h4>
 					<? $title_field->display() ?>
+					<h4>Path</h4>
+					<? $path_field->unbind('keyup')->bind('change')->display() ?>
 					<h4>Content</h4>
 					<? $editor->display() ?>
 				</div>
