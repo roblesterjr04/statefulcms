@@ -252,9 +252,10 @@ class CP_Page extends CP_Object {
 		});
 	}
 	
-	/*public function rewrite($slug, $id) {
-		return $id;
-	}*/
+	public function view_link($id) {
+		$page = $this->get_item($id);
+		return root()->settings->get('cp_site_url').'/'.$page->page_path;
+	}
 	
 	public function title() {
 		return 'Pages';
