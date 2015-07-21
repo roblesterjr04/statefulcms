@@ -10,11 +10,11 @@ root()->authentication->secure(true);
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css" />
-		<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css" type="text/css" />
+		<link rel="stylesheet" href="<?= root()->settings->get('cp_site_url') ?>/admin/bootstrap/css/bootstrap.min.css" type="text/css" />
+		<link rel="stylesheet" href="<?= root()->settings->get('cp_site_url') ?>/admin/bootstrap/css/bootstrap-theme.min.css" type="text/css" />
 		<!--<link rel="stylesheet" href="themes/holo/css/styles.css" type="text/css" />-->
 		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>
-		<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<?= root()->settings->get('cp_site_url') ?>/admin/bootstrap/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="//cdn.ckeditor.com/4.4.7/standard/ckeditor.js"></script>
 		<script type="text/javascript" src="<?= root()->settings->get('cp_site_url') ?>/js/state.js"></script>
 		<script type="text/javascript">var state_host = "<?= root()->settings->get('cp_site_url') ?>/admin/state.php";</script>

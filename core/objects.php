@@ -140,11 +140,15 @@ class CP_Object {
 	}
 	
 	public function edit_link($id = null) {
-		return root()->settings->get('cp_site_url').'/admin/?mod='.$this->_slug.(intval($id) || $id === 0 ? '&id='.$id : '');
+		return root()->settings->get('cp_site_url').'/admin/'.$this->rewrite($this->_slug, $id);
 	}
 	
 	public function view_link($id = null) {
-		return root()->settings->get('cp_site_url').'/?mod='.$this->_slug.($id?'&id='.$id:'');
+		return root()->settings->get('cp_site_url').'/'.$this->rewrite($this->_slug, $id);
+	}
+	
+	public function rewrite($slug, $id) {
+		return '?mod='.$slug.(intval($id) || $id === 0 ?'&id='.$id:'');
 	}
 	
 	public function get_objects($limit = null, $offset = null, $order = null) {
@@ -246,6 +250,10 @@ class CP_Page extends CP_Object {
 			if ($_GET['mod'] == $object->_slug && $content == 'index') $content = 'page';
 			return $content;
 		});
+	}
+	
+	public function rewrite($slug, $id) {
+		return 'page/'.$id;
 	}
 	
 	public function title() {
@@ -509,11 +517,17 @@ class CP_Admin_Settings extends CP_Object {
 	
 	public function admin() {
 		$file = CP_WORKING_DIR . '/.htaccess';
-		echo '<p>'.$file.'</p>';
-		if (file_exists($file)) echo '<p>Found HTAccess</p>';
 		$rewrite_text = file_get_contents($file);
-		$rewrites = new CP_TextArea('rewrite_rules', $rewrite_text, ['class'=>'form-control'], $this);
-		$rewrites->display();
+		$rewrites = new CP_TextArea('rewrite_rules', $rewrite_text, ['class'=>'form-control', 'style'=>'height: 600px'], $this);
+		$save_button = new CP_Button('save_button', 'Save .htaccess', ['class'=>'btn btn-primary'], $this);
+		$rewrites->unbind('keyup')->bind('change')->display();
+		$save_button->display();
+	}
+	
+	public function save_button_click($sender) {
+		$content = $this->controls->rewrite_rules->val();
+		$file = CP_WORKING_DIR . '/.htaccess';
+		file_put_contents($file, $content);
 	}
 	
 }
