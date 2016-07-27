@@ -7,17 +7,25 @@ class CP_Object {
 	public $controls;
 	public $state;
 	
+	public $template;
 	
 	public $is_public = true;
 	
 	public $object_table = 'object_items';
 	public $object_meta_table = 'objectmeta';
 	
-	public function __construct($name) {
+	public function __construct($name, $field = 'id', $meta = false) {
 		$this->controls = new StdClass();
 		$this->state = new StdClass();
 		$this->_slug = $name;
 		if (isset($_GET['mod']) && $_GET['mod'] == $name) $this->active = true;
+		
+	}
+	
+	public function template($base = 'index') {
+		$template = $base;
+		
+		return $template;
 	}
 	
 	/*public function __call($method, $args)
@@ -242,14 +250,10 @@ class CP_Objects {
 class CP_Page extends CP_Object {
 	
 	public $menus = ['side'];
+	public $template = 'page';
 	
 	public function __construct() {
-		parent::__construct('CP_Page');
-		root()->hooks->filter->add('theme_part', function($content) {
-			$object = root()->objects->get_object('CP_Page');
-			if ($_GET['mod'] == $object->_slug && $content == 'index') $content = 'page';
-			return $content;
-		});
+		parent::__construct('CP_Page', 'page_path', true);
 	}
 	
 	public function view_link($id) {

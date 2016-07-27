@@ -5,4 +5,6 @@ require_once 'core/init.php';
 
 root()->authentication->secure();
 
-root()->themes->get_theme_part('index');
+$part = root()->objects->get_object()->template();
+
+root()->themes->get_theme_part($part ?: 'index');

@@ -12,8 +12,9 @@ function cp_def_head() {
 root()->hooks->action->add('cp_head', 'cp_def_head');
 
 function cp_theme_require_login($value) {
-	$value = root()->settings->get('theme_require_login') === 1;
-	return $value;
+	//$value = root()->settings->get('theme_require_login') === 1;
+	//return $value;
+	return true;
 }
 root()->hooks->filter->add('cp_require_login', 'cp_theme_require_login');
 

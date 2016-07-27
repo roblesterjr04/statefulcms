@@ -1,0 +1,8 @@
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_URI} !#
+RewriteCond %{REQUEST_URI} !(.*)/$
+
+RewriteRule ^/?(((?!admin))[a-zA-Z0-9_/]+)$ index.php?id=$1 [L,QSA]
+RewriteRule ^/?admin/(.*?)$ admin/$1 [L,QSA]
